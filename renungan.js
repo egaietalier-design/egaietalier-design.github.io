@@ -1,4 +1,7 @@
 (() => {
+  const CONTENT_API = "https://erikson-atelier-admin.egaietalier.chatgpt.site/api/devotional";
+  const IMAGE_API = "https://erikson-atelier-admin.egaietalier.chatgpt.site/api/image";
+
   const setText = (selector, value) => {
     document.querySelectorAll(selector).forEach((element) => {
       element.textContent = value || "";
@@ -24,22 +27,28 @@
     }
 
     document.querySelectorAll("[data-renungan-gambar]").forEach((image) => {
-      if (data.gambar) {
-        image.src = data.gambar;
-        image.alt = "Gambar renungan: " + (data.judul || "Renungan Harian");
-        image.hidden = false;
-      } else {
-        image.hidden = true;
-      }
+      image.src = data.gambar || IMAGE_API;
+      image.alt = "Gambar renungan: " + (data.judul || "Renungan Harian");
+      image.hidden = false;
+      image.onerror = () => { image.hidden = true; };
+      image.onload = () => { image.hidden = false; };
     });
   };
 
-  fetch("renungan.json?v=" + Date.now())
-    .then((response) => {
-      if (!response.ok) throw new Error("Renungan tidak dapat dimuat");
-      return response.json();
+  const getJson = (url) => fetch(url, { cache: "no-store" }).then((response) => {
+    if (!response.ok) throw new Error("Data tidak dapat dimuat");
+    return response.json();
+  });
+
+  Promise.all([
+    getJson(CONTENT_API + "?v=" + Date.now()).catch(() => null),
+    getJson("renungan.json?v=" + Date.now()).catch(() => null),
+  ])
+    .then(([online, fallback]) => {
+      const data = { ...(fallback || {}), ...(online || {}), gambar: fallback?.gambar || IMAGE_API };
+      if (!data.judul) throw new Error("Renungan belum tersedia");
+      render(data);
     })
-    .then(render)
     .catch(() => {
       document.querySelectorAll("[data-renungan-status]").forEach((element) => {
         element.textContent = "Renungan belum dapat dimuat. Silakan coba kembali.";
