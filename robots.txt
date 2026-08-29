@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://egaietalier-design.github.io/sitemap.xml
+Sitemap: https://egaietalier-design.github.io/sitemap-erikson.xml
