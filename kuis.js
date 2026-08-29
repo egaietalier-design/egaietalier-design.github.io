@@ -21,6 +21,21 @@ const bibleQuestions = [
   {category:"Kisah Para Rasul",question:"Siapakah yang berdoa dan menyanyikan pujian ketika berada di penjara?",options:["Petrus dan Yohanes","Paulus dan Silas","Barnabas dan Markus","Filipus dan Stefanus"],answer:1,reference:"Kisah Para Rasul 16:25–26",explanation:"Paulus dan Silas tetap memuji Tuhan di tengah penderitaan, lalu terjadi gempa bumi yang membuka pintu-pintu penjara."}
 ];
 
+const essayQuestions = [
+  {category:"Kehidupan Kristen",question:"Jelaskan mengapa mengasihi Allah dan mengasihi sesama tidak dapat dipisahkan.",reference:"Matius 22:37–39",explanation:"Kasih kepada Allah harus terlihat melalui cara kita memperlakukan sesama. Yesus menempatkan kedua perintah ini sebagai dasar seluruh hukum: mengasihi Tuhan dengan segenap hidup dan mengasihi sesama seperti diri sendiri."},
+  {category:"Perjanjian Lama",question:"Apa yang dapat dipelajari dari kehidupan Yusuf tentang rencana Allah dan pengampunan?",reference:"Kejadian 50:20",explanation:"Yusuf mengalami ketidakadilan, tetapi Allah memakai peristiwa itu untuk menyelamatkan banyak orang. Yusuf memilih mengampuni saudara-saudaranya dan mengakui bahwa Allah sanggup mengubah maksud jahat menjadi kebaikan."},
+  {category:"Kehidupan Kristen",question:"Apa arti pernyataan bahwa iman tanpa perbuatan adalah mati?",reference:"Yakobus 2:17",explanation:"Iman yang sejati bukan hanya pengakuan melalui kata-kata. Iman menghasilkan tindakan nyata seperti kasih, ketaatan, kepedulian, dan pertolongan kepada sesama. Perbuatan bukan cara membeli keselamatan, tetapi buah dari iman."},
+  {category:"Ajaran Yesus",question:"Mengapa Yesus memakai orang Samaria sebagai teladan dalam perumpamaan tentang sesama?",reference:"Lukas 10:25–37",explanation:"Yesus menantang batas suku, status, dan prasangka. Sesama adalah orang yang membutuhkan belas kasihan kita. Kasih yang benar diwujudkan melalui tindakan menolong, bukan hanya mengetahui hukum."},
+  {category:"Ajaran Yesus",question:"Apa makna orang percaya disebut garam dunia dan terang dunia?",reference:"Matius 5:13–16",explanation:"Garam menggambarkan pengaruh yang menjaga dan memberi rasa, sedangkan terang membuat kebenaran terlihat. Orang percaya dipanggil menghadirkan kebaikan dan memuliakan Allah melalui kehidupan nyata."},
+  {category:"Doa",question:"Bagaimana doa menolong orang percaya menghadapi kekhawatiran?",reference:"Filipi 4:6–7",explanation:"Orang percaya diajar membawa permohonan kepada Allah dengan ucapan syukur. Doa tidak selalu langsung mengubah keadaan, tetapi damai sejahtera Allah memelihara hati dan pikiran dalam Kristus."},
+  {category:"Kehidupan Kristen",question:"Sebutkan buah Roh dan jelaskan salah satu penerapannya dalam kehidupan sehari-hari.",reference:"Galatia 5:22–23",explanation:"Buah Roh ialah kasih, sukacita, damai sejahtera, kesabaran, kemurahan, kebaikan, kesetiaan, kelemahlembutan, dan penguasaan diri. Contohnya, penguasaan diri menolong seseorang tidak membalas perkataan kasar dengan kemarahan."},
+  {category:"Amanat Yesus",question:"Apa tanggung jawab orang percaya berdasarkan Amanat Agung?",reference:"Matius 28:19–20",explanation:"Orang percaya dipanggil pergi, menjadikan semua bangsa murid Kristus, membaptis, dan mengajar mereka melakukan perintah Yesus. Misi mencakup pemberitaan Injil dan pendampingan agar orang bertumbuh sebagai murid."},
+  {category:"Pertobatan",question:"Bagaimana kisah Zakheus menunjukkan pertobatan yang nyata?",reference:"Lukas 19:1–10",explanation:"Pertemuan dengan Yesus mengubah sikap Zakheus terhadap harta dan sesama. Ia bersedia memberi kepada orang miskin dan mengganti kerugian orang yang pernah diperasnya. Pertobatan terlihat melalui perubahan arah hidup."},
+  {category:"Kehidupan Yesus",question:"Apa pelajaran dari pengalaman Petrus berjalan di atas air lalu mulai tenggelam?",reference:"Matius 14:28–31",explanation:"Petrus berani melangkah karena percaya kepada perkataan Yesus, tetapi menjadi takut ketika memusatkan perhatian pada angin. Kisah ini mengajarkan iman, keterbatasan manusia, dan kesediaan Yesus menolong ketika kita berseru."},
+  {category:"Keselamatan",question:"Jelaskan arti keselamatan oleh kasih karunia melalui iman.",reference:"Efesus 2:8–10",explanation:"Keselamatan adalah pemberian Allah, bukan hasil usaha manusia untuk membanggakan diri. Kita menerimanya melalui iman kepada Kristus, lalu dipanggil menjalani kehidupan baru dan melakukan pekerjaan baik yang Allah kehendaki."},
+  {category:"Ketaatan",question:"Apa perbedaan orang bijaksana dan orang bodoh dalam perumpamaan dua macam dasar?",reference:"Matius 7:24–27",explanation:"Keduanya mendengar perkataan Yesus, tetapi hanya orang bijaksana yang melakukannya. Ketaatan menjadi fondasi yang kokoh ketika hidup menghadapi kesulitan, sedangkan mendengar tanpa melakukan menghasilkan dasar yang rapuh."}
+];
+
 const intro=document.getElementById("quiz-intro");
 const game=document.getElementById("quiz-game");
 const result=document.getElementById("quiz-result");
@@ -28,7 +43,12 @@ const startButton=document.getElementById("start-quiz");
 const playAgain=document.getElementById("play-again");
 const nextButton=document.getElementById("next-question");
 const optionBox=document.getElementById("answer-options");
+const essayArea=document.getElementById("essay-area");
+const essayAnswer=document.getElementById("essay-answer");
+const revealAnswer=document.getElementById("reveal-answer");
 const explanation=document.getElementById("answer-explanation");
+const selfAssessment=document.getElementById("self-assessment");
+let selectedMode="choice";
 let round=[];
 let current=0;
 let score=0;
@@ -36,8 +56,24 @@ let answered=false;
 
 const shuffle=(items)=>[...items].sort(()=>Math.random()-.5);
 
+document.querySelectorAll(".quiz-mode").forEach((button)=>{
+  button.addEventListener("click",()=>{
+    selectedMode=button.dataset.mode;
+    document.querySelectorAll(".quiz-mode").forEach((item)=>{
+      const active=item===button;
+      item.classList.toggle("active",active);
+      item.setAttribute("aria-pressed",String(active));
+    });
+    const essay=selectedMode==="essay";
+    document.getElementById("mode-description").textContent=essay
+      ?"Tuliskan jawaban untuk 5 soal acak, lalu bandingkan dengan contoh jawaban dan ayat."
+      :"Jawab 10 pertanyaan pilihan ganda dan dapatkan skor otomatis.";
+    startButton.textContent=essay?"Mulai kuis esai":"Mulai pilihan ganda";
+  });
+});
+
 function startGame(){
-  round=shuffle(bibleQuestions).slice(0,10);
+  round=shuffle(selectedMode==="essay"?essayQuestions:bibleQuestions).slice(0,selectedMode==="essay"?5:10);
   current=0;
   score=0;
   answered=false;
@@ -51,25 +87,39 @@ function startGame(){
 function renderQuestion(){
   answered=false;
   explanation.hidden=true;
+  selfAssessment.hidden=true;
   nextButton.hidden=true;
   const item=round[current];
-  document.getElementById("question-count").textContent=`Pertanyaan ${current+1} dari 10`;
+  const total=round.length;
+  document.getElementById("question-count").textContent=`Pertanyaan ${current+1} dari ${total}`;
   document.getElementById("score-display").textContent=`Skor: ${score}`;
   document.getElementById("question-category").textContent=item.category;
   document.getElementById("question-text").textContent=item.question;
   const progress=document.querySelector(".quiz-progress");
+  progress.setAttribute("aria-valuemax",String(total));
   progress.setAttribute("aria-valuenow",String(current+1));
-  document.getElementById("progress-bar").style.width=`${(current+1)*10}%`;
+  document.getElementById("progress-bar").style.width=`${((current+1)/total)*100}%`;
   optionBox.innerHTML="";
-  item.options.forEach((option,index)=>{
-    const button=document.createElement("button");
-    button.type="button";
-    button.className="answer-option";
-    button.innerHTML=`<span>${String.fromCharCode(65+index)}</span><strong></strong>`;
-    button.querySelector("strong").textContent=option;
-    button.addEventListener("click",()=>selectAnswer(index));
-    optionBox.appendChild(button);
-  });
+
+  if(selectedMode==="essay"){
+    optionBox.hidden=true;
+    essayArea.hidden=false;
+    essayAnswer.value="";
+    essayAnswer.disabled=false;
+    revealAnswer.disabled=false;
+  }else{
+    optionBox.hidden=false;
+    essayArea.hidden=true;
+    item.options.forEach((option,index)=>{
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="answer-option";
+      button.innerHTML=`<span>${String.fromCharCode(65+index)}</span><strong></strong>`;
+      button.querySelector("strong").textContent=option;
+      button.addEventListener("click",()=>selectAnswer(index));
+      optionBox.appendChild(button);
+    });
+  }
 }
 
 function selectAnswer(selected){
@@ -85,38 +135,89 @@ function selectAnswer(selected){
   const correct=selected===item.answer;
   if(correct)score+=10;
   document.getElementById("score-display").textContent=`Skor: ${score}`;
-  document.getElementById("answer-status").textContent=correct?"Benar!":"Belum tepat.";
-  document.getElementById("answer-status").className=correct?"status-correct":"status-wrong";
-  document.getElementById("answer-detail").textContent=item.explanation;
-  document.getElementById("answer-reference").textContent=item.reference;
-  explanation.hidden=false;
+  showExplanation(correct?"Benar!":"Belum tepat.",correct);
   nextButton.textContent=current===round.length-1?"Lihat hasil":"Pertanyaan berikutnya";
   nextButton.hidden=false;
 }
 
+function showExplanation(status,correct){
+  const item=round[current];
+  const statusElement=document.getElementById("answer-status");
+  statusElement.textContent=status;
+  statusElement.className=correct?"status-correct":"status-wrong";
+  document.getElementById("answer-detail").textContent=item.explanation;
+  document.getElementById("answer-reference").textContent=item.reference;
+  explanation.hidden=false;
+}
+
+revealAnswer.addEventListener("click",()=>{
+  const response=essayAnswer.value.trim();
+  if(response.length<10){
+    essayAnswer.focus();
+    document.getElementById("answer-status").textContent="Tuliskan jawabanmu terlebih dahulu.";
+    document.getElementById("answer-status").className="status-wrong";
+    document.getElementById("answer-detail").textContent="Gunakan bahasamu sendiri, minimal satu kalimat.";
+    document.getElementById("answer-reference").textContent="";
+    explanation.hidden=false;
+    return;
+  }
+  answered=true;
+  essayAnswer.disabled=true;
+  revealAnswer.disabled=true;
+  showExplanation("Contoh jawaban dan dasar Alkitab",true);
+  selfAssessment.hidden=false;
+});
+
+selfAssessment.querySelectorAll("button").forEach((button)=>{
+  button.addEventListener("click",()=>{
+    if(button.dataset.scored==="true")return;
+    selfAssessment.querySelectorAll("button").forEach((item)=>{
+      item.disabled=true;
+      item.dataset.scored="true";
+    });
+    if(button.dataset.understood==="yes")score+=20;
+    document.getElementById("score-display").textContent=`Skor: ${score}`;
+    button.classList.add("selected");
+    nextButton.textContent=current===round.length-1?"Lihat hasil":"Pertanyaan berikutnya";
+    nextButton.hidden=false;
+  });
+});
+
 function showResult(){
   game.hidden=true;
   result.hidden=false;
-  const correct=score/10;
+  const essay=selectedMode==="essay";
+  const understood=essay?score/20:score/10;
+  const total=essay?5:10;
   let title="Terus bertumbuh dalam Firman!";
-  let message=`Kamu menjawab ${correct} dari 10 pertanyaan dengan benar. Baca kembali penjelasan ayat dan teruslah belajar.`;
-  if(score>=90){title="Luar biasa!";message=`Kamu menjawab ${correct} dari 10 pertanyaan dengan benar. Pemahaman Alkitabmu sangat baik—teruslah membaca dan melakukan Firman Tuhan.`;}
-  else if(score>=70){title="Bagus sekali!";message=`Kamu menjawab ${correct} dari 10 pertanyaan dengan benar. Terus belajar agar Firman Tuhan semakin bertumbuh dalam hidupmu.`;}
+  let message=essay
+    ?`Kamu menilai ${understood} dari ${total} jawaban sudah dipahami. Pelajari kembali ayat yang masih sulit dan coba permainan baru.`
+    :`Kamu menjawab ${understood} dari ${total} pertanyaan dengan benar. Baca kembali penjelasan ayat dan teruslah belajar.`;
+  if(score>=90){title="Luar biasa!";message=essay?`Kamu memahami ${understood} dari ${total} pembahasan. Teruslah menggali Firman dan menerapkannya.`:`Kamu menjawab ${understood} dari ${total} pertanyaan dengan benar. Pemahaman Alkitabmu sangat baik.`;}
+  else if(score>=70){title="Bagus sekali!";}
   else if(score>=50){title="Usaha yang baik!";}
-  document.getElementById("final-score").textContent=`${correct}/10`;
+  document.getElementById("final-score").textContent=`${score}/100`;
   document.getElementById("result-title").textContent=title;
   document.getElementById("result-message").textContent=message;
-  const previous=Number(localStorage.getItem("eriksonQuizBest")||0);
+  const key=essay?"eriksonEssayBest":"eriksonQuizBest";
+  const previous=Number(localStorage.getItem(key)||0);
   const best=Math.max(previous,score);
-  localStorage.setItem("eriksonQuizBest",String(best));
-  document.getElementById("best-score").textContent=`${best/10}/10`;
+  localStorage.setItem(key,String(best));
+  document.getElementById("best-score").textContent=`${best}/100`;
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
 nextButton.addEventListener("click",()=>{
   current+=1;
   if(current>=round.length)showResult();
-  else renderQuestion();
+  else{
+    selfAssessment.querySelectorAll("button").forEach((item)=>{
+      item.disabled=false;
+      delete item.dataset.scored;
+      item.classList.remove("selected");
+    });
+    renderQuestion();
+  }
 });
 startButton.addEventListener("click",startGame);
 playAgain.addEventListener("click",startGame);
