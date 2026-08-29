@@ -28,11 +28,16 @@
         <h1>Kuis Alkitab</h1>
         <p>Jawab 10 pertanyaan acak, pelajari penjelasannya, dan lihat seberapa jauh pemahamanmu tentang isi Alkitab.</p>
         <ul>
-          <li>10 pertanyaan pilihan ganda</li>
-          <li>Penjelasan dan referensi ayat</li>
-          <li>Skor terbaik tersimpan di perangkatmu</li>
+          <li>Mode pilihan ganda: 10 pertanyaan acak</li>
+          <li>Mode esai: 5 pertanyaan yang selalu berganti</li>
+          <li>Penjelasan, contoh jawaban, dan referensi ayat</li>
         </ul>
-        <button class="button button-primary quiz-start" id="start-quiz" type="button">Mulai bermain</button>
+        <div class="quiz-mode-picker" aria-label="Pilih jenis kuis">
+          <button class="quiz-mode active" type="button" data-mode="choice" aria-pressed="true">Pilihan Ganda</button>
+          <button class="quiz-mode" type="button" data-mode="essay" aria-pressed="false">Esai 5 Soal</button>
+        </div>
+        <p class="mode-description" id="mode-description">Jawab 10 pertanyaan pilihan ganda dan dapatkan skor otomatis.</p>
+        <button class="button button-primary quiz-start" id="start-quiz" type="button">Mulai pilihan ganda</button>
       </div>
       <div class="quiz-badge" aria-hidden="true"><span>?</span><strong>Firman Tuhan</strong><small>Pelajari • Pahami • Lakukan</small></div>
     </section>
@@ -46,10 +51,20 @@
         <p class="question-category" id="question-category">Perjanjian Lama</p>
         <h2 id="question-text">Pertanyaan akan tampil di sini.</h2>
         <div class="answer-grid" id="answer-options"></div>
+        <div class="essay-area" id="essay-area" hidden>
+          <label for="essay-answer">Tuliskan jawabanmu</label>
+          <textarea id="essay-answer" rows="7" placeholder="Jelaskan dengan bahasamu sendiri…"></textarea>
+          <button class="button button-secondary" id="reveal-answer" type="button">Bandingkan dengan contoh jawaban</button>
+        </div>
         <div class="answer-explanation" id="answer-explanation" hidden>
           <strong id="answer-status"></strong>
           <p id="answer-detail"></p>
           <span id="answer-reference"></span>
+        </div>
+        <div class="self-assessment" id="self-assessment" hidden>
+          <p>Setelah membandingkan, bagaimana pemahamanmu?</p>
+          <button type="button" data-understood="yes">Saya sudah memahami</button>
+          <button type="button" data-understood="no">Saya perlu belajar lagi</button>
         </div>
         <button class="button button-secondary quiz-next" id="next-question" type="button" hidden>Pertanyaan berikutnya</button>
       </article>
