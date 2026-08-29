@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Baca dan dengarkan Alkitab lengkap Perjanjian Lama dan Perjanjian Baru di Erikson Atelier.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://egaietalier-design.github.io/alkitab.html">
+  <title>Baca & Dengarkan Alkitab | Erikson Atelier</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="alkitab.css">
+</head>
+<body class="bible-reader-body">
+  <header class="article-header">
+    <nav class="nav shell">
+      <a class="brand" href="index.html"><span class="brand-mark">EG</span><span>Erikson Atelier</span></a>
+      <div class="nav-links reader-nav">
+        <a href="index.html">Beranda</a>
+        <a href="renungan.html">Renungan</a>
+        <a href="belajar.html">Belajar</a>
+        <a href="kuis.html">Kuis</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="bible-reader-page shell">
+    <section class="reader-intro">
+      <div>
+        <p class="eyebrow">Alkitab Bahasa Indonesia</p>
+        <h1>Baca dan dengarkan Firman Tuhan.</h1>
+        <p>Pilih kitab dan pasal dari Perjanjian Lama atau Perjanjian Baru. Tekan tombol suara untuk mendengarkannya.</p>
+      </div>
+      <div class="reader-summary" aria-label="Informasi Alkitab">
+        <strong>66</strong><span>kitab</span><i></i><strong>PL + PB</strong><span>lengkap</span>
+      </div>
+    </section>
+
+    <section class="reader-layout" aria-label="Pembaca Alkitab">
+      <aside class="reader-controls">
+        <div class="reader-field">
+          <label for="testamentSelect">Bagian Alkitab</label>
+          <select id="testamentSelect">
+            <option value="all">Semua kitab</option>
+            <option value="PL">Perjanjian Lama (PL)</option>
+            <option value="PB">Perjanjian Baru (PB)</option>
+          </select>
+        </div>
+        <div class="reader-field">
+          <label for="bookSelect">Pilih kitab</label>
+          <select id="bookSelect"></select>
+        </div>
+        <div class="reader-field">
+          <label for="chapterSelect">Pilih pasal</label>
+          <select id="chapterSelect"></select>
+        </div>
+
+        <div class="reader-nav-buttons">
+          <button id="previousChapter" type="button" aria-label="Pasal sebelumnya">← Sebelumnya</button>
+          <button id="nextChapter" type="button" aria-label="Pasal berikutnya">Berikutnya →</button>
+        </div>
+
+        <div class="audio-panel">
+          <p class="audio-title"><span aria-hidden="true">🔊</span> Dengarkan pasal</p>
+          <div class="audio-buttons">
+            <button id="playAudio" class="audio-primary" type="button">▶ Putar</button>
+            <button id="pauseAudio" type="button" disabled>⏸ Jeda</button>
+            <button id="stopAudio" type="button" disabled>■ Berhenti</button>
+          </div>
+          <label class="speed-control" for="audioSpeed">Kecepatan suara
+            <select id="audioSpeed">
+              <option value="0.8">0,8×</option>
+              <option value="1" selected>1× Normal</option>
+              <option value="1.2">1,2×</option>
+            </select>
+          </label>
+          <p id="audioStatus" class="audio-status" aria-live="polite">Siap dibacakan.</p>
+        </div>
+
+        <p class="reader-tip">Pilihan kitab terakhir akan tersimpan otomatis di perangkat ini.</p>
+      </aside>
+
+      <article class="scripture-card">
+        <div class="scripture-heading">
+          <div>
+            <p id="testamentLabel" class="eyebrow">Perjanjian Lama</p>
+            <h2 id="chapterTitle">Kejadian 1</h2>
+          </div>
+          <button id="shareChapter" class="share-chapter" type="button">Bagikan</button>
+        </div>
+        <p id="readerStatus" class="reader-status" aria-live="polite">Memuat ayat...</p>
+        <div id="verseList" class="verse-list"></div>
+        <div class="bottom-chapter-nav">
+          <button id="previousChapterBottom" type="button">← Pasal sebelumnya</button>
+          <button id="nextChapterBottom" type="button">Pasal berikutnya →</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="reader-license">
+      <strong>Tentang teks Alkitab</strong>
+      <p>Teks menggunakan <a href="https://www.openbible.uk/id-ID/" target="_blank" rel="noreferrer">Alkitab Open Translation Bahasa Indonesia</a>, tersedia di bawah lisensi <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>. Teks tidak diubah; tanda format sumber hanya disederhanakan untuk tampilan pembaca. Fitur suara menggunakan suara bawaan HP atau laptop Anda.</p>
+    </section>
+  </main>
+
+  <footer class="footer shell"><p>© 2026 Erikson Giawa</p><p>Erikson Atelier — ruang kreatif untuk karya dan Firman.</p></footer>
+  <script src="alkitab.js" defer></script>
+</body>
+</html>
