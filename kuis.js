@@ -73,6 +73,11 @@ document.querySelectorAll(".quiz-mode").forEach((button)=>{
 });
 
 function startGame(){
+  selfAssessment.querySelectorAll("button").forEach((item)=>{
+    item.disabled=false;
+    delete item.dataset.scored;
+    item.classList.remove("selected");
+  });
   round=shuffle(selectedMode==="essay"?essayQuestions:bibleQuestions).slice(0,selectedMode==="essay"?5:10);
   current=0;
   score=0;
