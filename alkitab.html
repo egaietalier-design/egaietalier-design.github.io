@@ -36,7 +36,7 @@
     </section>
 
     <section class="reader-layout" aria-label="Pembaca Alkitab">
-      <aside class="reader-controls">
+      <aside class="reader-controls top-reader-controls">
         <div class="reader-field">
           <label for="testamentSelect">Bagian Alkitab</label>
           <select id="testamentSelect">
@@ -76,7 +76,7 @@
           <p id="audioStatus" class="audio-status" aria-live="polite">Siap dibacakan.</p>
         </div>
 
-        <p class="reader-tip">Pilihan kitab terakhir akan tersimpan otomatis di perangkat ini.</p>
+        <p class="reader-tip">Panel ini berada di atas agar Alkitab dapat dibaca dengan layar penuh. Pilihan terakhir tersimpan otomatis.</p>
       </aside>
 
       <article class="scripture-card book-reader" id="bookReader">
@@ -104,6 +104,13 @@
             <select id="verseSelect" aria-label="Lompat ke ayat"></select>
           </div>
           <button id="quickPlayAudio" class="quick-audio-button" type="button" aria-label="Dengarkan bacaan">🔊 Dengarkan</button>
+        </div>
+
+        <div class="verse-selection-bar" id="verseSelectionBar" hidden aria-live="polite">
+          <div><span>Ayat dipilih</span><strong id="selectedVerseReference">—</strong></div>
+          <p id="selectedVersePreview"></p>
+          <button id="copyVerseButton" type="button">📋 Salin Ayat</button>
+          <button id="clearVerseSelection" type="button" aria-label="Batalkan pilihan ayat">×</button>
         </div>
 
         <div class="book-page-content" id="bookPage">
