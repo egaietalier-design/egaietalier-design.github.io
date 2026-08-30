@@ -99,3 +99,20 @@
  .verse-selection-bar>div,.verse-selection-bar p{grid-column:1/-1}.verse-selection-bar p{white-space:normal}
  .verse-selection-bar #copyVerseButton{grid-column:1}.verse-selection-bar #clearVerseSelection{grid-column:2;grid-row:3}
 }
+
+
+/* Berkat rohani setiap pasal */
+.spiritual-blessing{position:relative;z-index:2;display:grid;grid-template-columns:58px 1fr;align-items:start;gap:17px;margin:15px 0 5px;border:1px solid rgba(179,119,32,.28);border-radius:17px;padding:19px 21px;background:
+ linear-gradient(135deg,rgba(255,248,220,.98),rgba(244,239,222,.96)),
+ #fff8dd;box-shadow:0 10px 26px rgba(77,53,21,.09)}
+.blessing-symbol{display:grid;width:54px;height:54px;place-items:center;border-radius:50%;background:linear-gradient(145deg,#0b3562,#135ea7);box-shadow:0 8px 20px rgba(11,53,98,.22);color:#ffd66b;font-size:24px}
+.blessing-label{margin:0 0 5px;color:#9a6a20;font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.spiritual-blessing h3{margin:0;color:#3e2f21;font-family:Georgia,"Times New Roman",serif;font-size:clamp(20px,2.5vw,27px);font-weight:500;line-height:1.15}
+.spiritual-blessing div>p:not(.blessing-label){max-width:820px;margin:8px 0 7px;color:#5d4a38;font-size:14px;line-height:1.6}
+.spiritual-blessing small{display:inline-flex;border-radius:999px;padding:6px 10px;background:rgba(19,94,167,.08);color:#0b568c;font-size:10px;font-weight:900}
+@media(max-width:560px){
+ .spiritual-blessing{grid-template-columns:42px 1fr;gap:12px;padding:16px 14px}
+ .blessing-symbol{width:42px;height:42px;font-size:19px}
+ .spiritual-blessing h3{font-size:20px}
+ .spiritual-blessing div>p:not(.blessing-label){font-size:13px}
+}
