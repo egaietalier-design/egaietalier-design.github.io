@@ -31,7 +31,10 @@ const ui = {
   speed: document.querySelector("#audioSpeed"), audioStatus: document.querySelector("#audioStatus"),
   share: document.querySelector("#shareChapter"), card: document.querySelector("#bookReader"),
   quickBook: document.querySelector("#quickBookSelect"), quickChapter: document.querySelector("#quickChapterSelect"),
-  verseSelect: document.querySelector("#verseSelect"), quickPlay: document.querySelector("#quickPlayAudio")
+  verseSelect: document.querySelector("#verseSelect"), quickPlay: document.querySelector("#quickPlayAudio"),
+  selectionBar: document.querySelector("#verseSelectionBar"), selectedRef: document.querySelector("#selectedVerseReference"),
+  selectedPreview: document.querySelector("#selectedVersePreview"), copyVerse: document.querySelector("#copyVerseButton"),
+  clearSelection: document.querySelector("#clearVerseSelection")
 };
 
 let currentBook = BOOKS[0];
@@ -40,6 +43,7 @@ let currentVerses = [];
 let audioIndex = 0;
 let audioSession = 0;
 let isSpeaking = false;
+let selectedVerse = null;
 
 function getInitialReading() {
   const params = new URLSearchParams(location.search);
@@ -112,12 +116,17 @@ function renderVerses(data) {
     const paragraph = document.createElement("p");
     paragraph.className = "bible-verse";
     paragraph.dataset.verse = verse.number;
+    paragraph.tabIndex = 0;
+    paragraph.setAttribute("role", "button");
+    paragraph.setAttribute("aria-label", `Pilih ayat ${verse.number} untuk disalin`);
+    paragraph.title = "Klik untuk memilih dan menyalin ayat";
     const number = document.createElement("sup");
     number.textContent = verse.number;
     paragraph.append(number, document.createTextNode(verse.text));
     fragment.append(paragraph);
   });
   ui.verses.replaceChildren(fragment);
+  clearSelectedVerse();
   ui.verseSelect.replaceChildren(...currentVerses.map(verse => {
     const option = document.createElement("option");
     option.value = String(verse.number);
@@ -134,14 +143,52 @@ function animatePageTurn(direction = 0) {
   setTimeout(() => ui.card.classList.remove(animation), 760);
 }
 
-function jumpToVerse() {
-  const verseNumber = Number(ui.verseSelect.value);
+function clearSelectedVerse() {
+  selectedVerse = null;
+  document.querySelectorAll(".bible-verse.selected").forEach(element => element.classList.remove("selected"));
+  ui.selectionBar.hidden = true;
+  ui.selectedRef.textContent = "—";
+  ui.selectedPreview.textContent = "";
+  ui.copyVerse.textContent = "📋 Salin Ayat";
+}
+
+function selectVerse(verseNumber, { scroll = false } = {}) {
+  const verse = currentVerses.find(item => item.number === Number(verseNumber));
   const target = document.querySelector(`[data-verse="${verseNumber}"]`);
-  if (!target) return;
+  if (!verse || !target) return;
+  selectedVerse = verse;
   document.querySelectorAll(".bible-verse.selected").forEach(element => element.classList.remove("selected"));
   target.classList.add("selected");
-  target.scrollIntoView({ behavior: "smooth", block: "center" });
-  setTimeout(() => target.classList.remove("selected"), 1800);
+  ui.verseSelect.value = String(verse.number);
+  ui.selectedRef.textContent = `${currentBook.name} ${currentChapter}:${verse.number}`;
+  ui.selectedPreview.textContent = verse.text;
+  ui.selectionBar.hidden = false;
+  ui.copyVerse.textContent = "📋 Salin Ayat";
+  if (scroll) target.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function jumpToVerse() {
+  selectVerse(Number(ui.verseSelect.value), { scroll: true });
+}
+
+async function copySelectedVerse() {
+  if (!selectedVerse) return;
+  const reference = `${currentBook.name} ${currentChapter}:${selectedVerse.number}`;
+  const text = `${reference}\n${selectedVerse.text}`;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (error) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.append(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+  }
+  ui.copyVerse.textContent = "✓ Ayat Tersalin";
+  setTimeout(() => { if (selectedVerse) ui.copyVerse.textContent = "📋 Salin Ayat"; }, 1800);
 }
 
 async function loadChapter({ scroll = true, direction = 0 } = {}) {
@@ -311,6 +358,19 @@ ui.quickChapter.addEventListener("change", () => {
   loadChapter();
 });
 ui.verseSelect.addEventListener("change", jumpToVerse);
+ui.verses.addEventListener("click", event => {
+  const verse = event.target.closest(".bible-verse");
+  if (verse) selectVerse(Number(verse.dataset.verse));
+});
+ui.verses.addEventListener("keydown", event => {
+  const verse = event.target.closest(".bible-verse");
+  if (verse && (event.key === "Enter" || event.key === " ")) {
+    event.preventDefault();
+    selectVerse(Number(verse.dataset.verse));
+  }
+});
+ui.copyVerse.addEventListener("click", copySelectedVerse);
+ui.clearSelection.addEventListener("click", clearSelectedVerse);
 [ui.previous, ui.previousBottom].forEach(button => button.addEventListener("click", () => moveChapter(-1)));
 [ui.next, ui.nextBottom].forEach(button => button.addEventListener("click", () => moveChapter(1)));
 ui.play.addEventListener("click", playAudio);
