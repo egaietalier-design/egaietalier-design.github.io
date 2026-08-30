@@ -7,3 +7,62 @@
 @media(max-width:1000px){.nav-links{gap:16px}.nav-links a{font-size:12px}.reader-layout{grid-template-columns:260px minmax(0,1fr)}.reader-controls{padding:18px}}
 @media(max-width:760px){.reader-nav{display:none}.reader-intro{align-items:flex-start;flex-direction:column;padding:48px 0 34px}.reader-summary{width:100%;grid-template-columns:auto 1fr}.reader-layout{grid-template-columns:1fr}.reader-controls{position:static;border-radius:20px}.reader-field{display:grid;grid-template-columns:112px 1fr;align-items:center;gap:10px}.reader-field label{margin:0}.audio-panel{padding:16px}.scripture-card{border-radius:20px}.scripture-heading{align-items:center}.reader-license{margin-bottom:60px}}
 @media(max-width:480px){.reader-intro h1{font-size:45px}.reader-intro>div:first-child>p:last-child{font-size:16px}.reader-field{display:block}.reader-field label{margin-bottom:7px}.reader-nav-buttons{grid-template-columns:1fr}.scripture-card{padding:26px 18px}.scripture-heading{align-items:flex-start;flex-direction:column}.share-chapter{width:100%}.bible-verse{padding:8px 5px;font-size:18px}.bottom-chapter-nav{grid-template-columns:1fr}.reader-license{padding:18px}}
+
+
+/* Pembaca Alkitab bergaya buku terbuka */
+.bible-reader-body{background:
+  radial-gradient(circle at 12% 8%,rgba(227,166,39,.22),transparent 26%),
+  radial-gradient(circle at 88% 18%,rgba(19,94,167,.16),transparent 30%),
+  linear-gradient(180deg,#e8f1f6 0,#f6efe2 580px,#efe4d1 100%)}
+.book-reader{position:relative;perspective:1800px;overflow:hidden;border:1px solid rgba(110,76,38,.25);border-radius:18px 28px 28px 18px;padding:clamp(28px,5vw,62px);background:
+  linear-gradient(90deg,rgba(100,65,25,.08),transparent 5%,transparent 48.8%,rgba(90,60,30,.1) 50%,transparent 51.2%,transparent 96%,rgba(100,65,25,.08)),
+  repeating-linear-gradient(0deg,rgba(110,75,38,.018) 0,rgba(110,75,38,.018) 1px,transparent 1px,transparent 4px),
+  #fffdf5;box-shadow:0 7px 0 #d4b983,0 13px 0 #bda16d,0 34px 80px rgba(62,42,20,.24);transform-style:preserve-3d}
+.book-reader:before{position:absolute;inset:10px;border:1px solid rgba(140,103,54,.13);border-radius:12px 22px 22px 12px;pointer-events:none;content:""}
+.book-spine{position:absolute;top:0;bottom:0;left:50%;z-index:0;width:34px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,rgba(73,49,24,.08),rgba(255,255,255,.5),rgba(73,49,24,.07),transparent);pointer-events:none}
+.book-ribbon{position:absolute;top:0;right:clamp(48px,8vw,100px);z-index:3;width:20px;height:78px;background:linear-gradient(90deg,#9d2434,#c6404c,#8c1e2d);box-shadow:0 4px 8px rgba(77,18,28,.25);clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%)}
+.scripture-heading,.reading-toolbar,.book-page-content,.bottom-chapter-nav{position:relative;z-index:1}
+.scripture-heading{border-bottom:1px solid rgba(111,76,38,.22)}
+.scripture-heading h2{color:#392b1e}
+.scripture-heading .eyebrow{color:#9a6a20}
+.reading-toolbar{position:sticky;top:8px;z-index:8;display:grid;grid-template-columns:minmax(150px,1.25fr) minmax(90px,.65fr) minmax(80px,.55fr) auto;align-items:end;gap:9px;margin:18px 0 5px;border:1px solid rgba(11,53,98,.18);border-radius:16px;padding:12px;background:rgba(249,246,235,.94);box-shadow:0 12px 30px rgba(44,37,28,.12);backdrop-filter:blur(12px)}
+.reading-toolbar label{display:block;margin:0 0 5px;color:#6b5a45;font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+.reading-toolbar select{width:100%;height:42px;border:1px solid rgba(98,74,42,.2);border-radius:10px;padding:0 10px;background:#fffdf7;color:#392b1e;font:inherit;font-size:12px;font-weight:700}
+.reading-toolbar select:focus{border-color:#b4812d;outline:3px solid rgba(227,166,39,.18)}
+.quick-audio-button{height:42px;border:0;border-radius:11px;padding:0 15px;background:linear-gradient(135deg,#0b3562,#135ea7);box-shadow:0 8px 18px rgba(11,53,98,.2);color:#fff;cursor:pointer;font-weight:900;white-space:nowrap}
+.quick-audio-button:hover{transform:translateY(-1px)}
+.book-page-content{min-height:480px;transform-origin:center center;backface-visibility:hidden}
+.verse-list{column-count:2;column-gap:76px;column-rule:1px solid rgba(103,76,44,.16);padding:31px 0}
+.bible-verse{break-inside:avoid;margin:0 0 2px;color:#392f26;font-family:Georgia,"Times New Roman",serif;font-size:clamp(17px,1.75vw,20px);line-height:1.85;text-align:justify}
+.bible-verse sup{color:#a16c1d}
+.bible-verse.speaking,.bible-verse.selected{background:linear-gradient(90deg,#fff0b9,#fff8df);box-shadow:inset 4px 0 0 #d89c25}
+.bottom-chapter-nav{grid-template-columns:1fr auto 1fr;align-items:center;border-top:1px solid rgba(111,76,38,.2)}
+.page-instruction{color:#8b765e;font-family:Georgia,"Times New Roman",serif;font-size:11px;font-style:italic;text-align:center}
+.book-reader.turning-next .book-page-content{animation:pageTurnNext .72s cubic-bezier(.24,.67,.32,1)}
+.book-reader.turning-previous .book-page-content{animation:pageTurnPrevious .72s cubic-bezier(.24,.67,.32,1)}
+.book-reader.book-opening .book-page-content{animation:bookOpening .68s ease-out}
+.book-reader.turning-next:after,.book-reader.turning-previous:after{position:absolute;top:155px;bottom:75px;z-index:6;width:50%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(103,76,44,.12),rgba(255,255,255,.68));pointer-events:none;content:""}
+.book-reader.turning-next:after{right:0;transform-origin:left;animation:pageSheetNext .72s ease-in-out}
+.book-reader.turning-previous:after{left:0;transform-origin:right;animation:pageSheetPrevious .72s ease-in-out}
+@keyframes pageTurnNext{0%{opacity:.45;transform:perspective(1200px) rotateY(8deg) translateX(18px)}48%{opacity:.15;transform:perspective(1200px) rotateY(-5deg) scaleX(.94)}100%{opacity:1;transform:none}}
+@keyframes pageTurnPrevious{0%{opacity:.45;transform:perspective(1200px) rotateY(-8deg) translateX(-18px)}48%{opacity:.15;transform:perspective(1200px) rotateY(5deg) scaleX(.94)}100%{opacity:1;transform:none}}
+@keyframes pageSheetNext{0%{opacity:0;transform:rotateY(0)}45%{opacity:1;transform:rotateY(-72deg)}100%{opacity:0;transform:rotateY(-150deg)}}
+@keyframes pageSheetPrevious{0%{opacity:0;transform:rotateY(0)}45%{opacity:1;transform:rotateY(72deg)}100%{opacity:0;transform:rotateY(150deg)}}
+@keyframes bookOpening{0%{opacity:0;transform:scale(.96) rotateX(5deg)}100%{opacity:1;transform:none}}
+@media(max-width:900px){
+  .book-spine{display:none}.verse-list{column-count:1;column-rule:0}
+  .reading-toolbar{grid-template-columns:1fr 1fr 1fr}.quick-audio-button{grid-column:1/-1}
+}
+@media(max-width:560px){
+  .book-reader{border-radius:13px 20px 20px 13px;padding:24px 16px;box-shadow:0 5px 0 #d4b983,0 9px 0 #bda16d,0 24px 55px rgba(62,42,20,.2)}
+  .book-ribbon{right:28px;height:62px}
+  .reading-toolbar{top:5px;grid-template-columns:1fr 1fr;margin-inline:-6px;padding:10px}
+  .reading-toolbar>div:first-child{grid-column:1/-1}.reading-toolbar select{font-size:11px}
+  .quick-audio-button{grid-column:1/-1}
+  .bottom-chapter-nav{grid-template-columns:1fr}.page-instruction{order:-1}
+  .book-reader.turning-next:after,.book-reader.turning-previous:after{top:210px;bottom:90px;width:85%}
+}
+@media(prefers-reduced-motion:reduce){
+  .book-reader.turning-next .book-page-content,.book-reader.turning-previous .book-page-content,.book-reader.book-opening .book-page-content,
+  .book-reader.turning-next:after,.book-reader.turning-previous:after{animation:none}
+}
