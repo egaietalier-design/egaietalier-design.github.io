@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Mainkan Kuis Alkitab Erikson Atelier dalam 10 tahap, dapatkan skor langsung, dan pelajari penjelasan ayatnya.">
-  <title>Kuis Alkitab 10 Tahap – Erikson Atelier</title>
+  <meta name="description" content="Mainkan Kuis Alkitab Erikson Atelier. Pilih bebas Tahap 1 sampai 10 dan dapatkan nilai langsung.">
+  <title>Kuis Alkitab Tahap 1–10 – Erikson Atelier</title>
   <link rel="canonical" href="https://egaietalier-design.github.io/kuis.html">
   <meta name="robots" content="index, follow">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4678537472039301" crossorigin="anonymous"></script>
@@ -22,70 +22,70 @@
   <main class="quiz-page shell">
     <a class="back-link" href="index.html#kuis">← Kembali ke beranda</a>
 
-    <section class="quiz-intro quiz-intro-staged" id="quiz-intro">
-      <div>
-        <p class="eyebrow">Belajar sambil bermain</p>
-        <h1>Kuis Alkitab<br><em>10 Tahap</em></h1>
-        <p>Selesaikan tahap demi tahap. Setelah menjawab, skor dan penjelasan ayat langsung tampil sebelum kamu melanjutkan.</p>
-        <div class="quiz-feature-pills"><span>10 tahap</span><span>Skor langsung</span><span>Referensi Alkitab</span><span>Nilai tersimpan</span></div>
-
-        <div class="quiz-start-card">
-          <label for="player-name">Nama panggilan pemain</label>
-          <input id="player-name" type="text" maxlength="30" autocomplete="nickname" placeholder="Contoh: Erikson">
-          <p id="name-error" class="quiz-name-error" aria-live="polite"></p>
-          <div class="quiz-mode-picker" aria-label="Pilih jenis kuis">
-            <button class="quiz-mode active" type="button" data-mode="choice" aria-pressed="true">Pilihan Ganda · 10 Tahap</button>
-            <button class="quiz-mode" type="button" data-mode="essay" aria-pressed="false">Esai · 5 Tahap</button>
-          </div>
-          <p class="mode-description" id="mode-description">Setiap jawaban benar bernilai 10 poin. Nilai maksimal 100.</p>
-          <button class="button button-primary quiz-start" id="start-quiz" type="button">Mulai Tahap 1</button>
-          <small class="quiz-consent">Gunakan nama panggilan, bukan nama lengkap. Dengan memulai, progres dan nilai dapat dilihat oleh admin Erikson Atelier.</small>
+    <section class="level-home" id="quiz-intro">
+      <div class="level-hero">
+        <div>
+          <p class="eyebrow">Belajar sambil bermain</p>
+          <h1>Pilih Tahap<br><em>Kuis Alkitab</em></h1>
+          <p>Masukkan nama panggilan, kemudian pilih tahap mana saja. Kamu tidak wajib memulai dari Tahap 1.</p>
         </div>
+        <div class="level-score-rule"><strong>10</strong><span>Nilai maksimal<br>setiap tahap</span></div>
       </div>
-      <div class="quiz-badge staged-badge" aria-hidden="true">
-        <small>PERJALANAN IMAN</small><span>10</span><strong>TAHAP</strong><i>Dari Kejadian sampai Wahyu</i>
-      </div>
+
+      <section class="player-gate">
+        <div><span class="player-number">01</span><div><strong>Siapa yang bermain?</strong><small>Nama dan nilai akan terlihat oleh admin.</small></div></div>
+        <label for="player-name">Nama panggilan</label>
+        <input id="player-name" type="text" maxlength="30" autocomplete="nickname" placeholder="Contoh: Erikson">
+        <p id="name-error" class="quiz-name-error" aria-live="polite"></p>
+        <small class="quiz-consent">Gunakan nama panggilan, bukan nama lengkap atau informasi pribadi.</small>
+      </section>
+
+      <section class="stage-selector" aria-labelledby="stage-heading">
+        <div class="stage-selector-heading"><div><span class="player-number">02</span><div><strong id="stage-heading">Pilih tahap permainan</strong><small>Boleh langsung memilih Tahap 10 atau tahap lainnya.</small></div></div><p><b>Tahap 1–5</b>: 5 soal · <b>Tahap 6–10</b>: 10 soal</p></div>
+        <div class="stage-card-grid">
+          <button type="button" class="stage-card" data-stage="1"><span>01</span><div><strong>Tahap 1</strong><small>5 pertanyaan · Dasar</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card" data-stage="2"><span>02</span><div><strong>Tahap 2</strong><small>5 pertanyaan · Dasar</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card" data-stage="3"><span>03</span><div><strong>Tahap 3</strong><small>5 pertanyaan · Bertumbuh</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card" data-stage="4"><span>04</span><div><strong>Tahap 4</strong><small>5 pertanyaan · Bertumbuh</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card" data-stage="5"><span>05</span><div><strong>Tahap 5</strong><small>5 pertanyaan · Menengah</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card advanced" data-stage="6"><span>06</span><div><strong>Tahap 6</strong><small>10 pertanyaan · Menengah</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card advanced" data-stage="7"><span>07</span><div><strong>Tahap 7</strong><small>10 pertanyaan · Menantang</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card advanced" data-stage="8"><span>08</span><div><strong>Tahap 8</strong><small>10 pertanyaan · Menantang</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card advanced" data-stage="9"><span>09</span><div><strong>Tahap 9</strong><small>10 pertanyaan · Mahir</small></div><i>Mulai →</i></button>
+          <button type="button" class="stage-card advanced final-level" data-stage="10"><span>10</span><div><strong>Tahap 10</strong><small>10 pertanyaan · Puncak</small></div><i>Mulai →</i></button>
+        </div>
+      </section>
     </section>
 
-    <section class="quiz-game staged-game" id="quiz-game" hidden aria-live="polite">
-      <div class="player-strip"><div><small>Pemain</small><strong id="active-player">–</strong></div><span id="live-mode">Pilihan Ganda</span></div>
-      <div class="stage-map" id="stage-map" aria-label="Tahapan kuis"></div>
+    <section class="quiz-game level-game" id="quiz-game" hidden aria-live="polite">
+      <div class="player-strip"><div><small>PEMAIN</small><strong id="active-player">–</strong></div><span id="active-stage">Tahap 1</span><button id="change-stage" type="button">Ganti tahap</button></div>
       <div class="quiz-topbar">
-        <div><span id="question-count">Tahap 1 dari 10</span><strong id="score-display">Skor: 0</strong></div>
-        <div class="quiz-progress" role="progressbar" aria-label="Kemajuan kuis" aria-valuemin="0" aria-valuemax="10" aria-valuenow="1"><span id="progress-bar"></span></div>
+        <div><span id="question-count">Soal 1 dari 5</span><strong id="score-display">Nilai: 0/10</strong></div>
+        <div class="quiz-progress" role="progressbar" aria-label="Kemajuan kuis" aria-valuemin="0" aria-valuemax="5" aria-valuenow="1"><span id="progress-bar"></span></div>
       </div>
       <article class="question-card">
-        <div class="question-stage-label"><span id="stage-number">01</span><p class="question-category" id="question-category">Perjanjian Lama</p></div>
+        <div class="question-stage-label"><span id="question-number">01</span><p class="question-category" id="question-category">Alkitab</p></div>
         <h2 id="question-text">Pertanyaan akan tampil di sini.</h2>
         <div class="answer-grid" id="answer-options"></div>
-        <div class="essay-area" id="essay-area" hidden>
-          <label for="essay-answer">Tuliskan jawabanmu berdasarkan Alkitab</label>
-          <textarea id="essay-answer" rows="7" placeholder="Jelaskan dengan bahasamu sendiri…"></textarea>
-          <button class="button button-secondary" id="reveal-answer" type="button">Bandingkan dengan contoh jawaban</button>
-        </div>
         <div class="answer-explanation stage-feedback" id="answer-explanation" hidden>
-          <div class="stage-score"><small>HASIL TAHAP INI</small><strong id="stage-points">+0</strong></div>
+          <div class="stage-score"><small>NILAI SEMENTARA</small><strong id="stage-points">0/10</strong></div>
           <div><strong id="answer-status"></strong><p id="answer-detail"></p><span id="answer-reference"></span></div>
         </div>
-        <div class="self-assessment" id="self-assessment" hidden>
-          <p>Setelah membandingkan, apakah jawabanmu sudah sesuai?</p>
-          <button type="button" data-understood="yes">Ya, sudah sesuai · +20</button>
-          <button type="button" data-understood="no">Belum sesuai · +0</button>
-        </div>
         <p class="score-sync" id="score-sync" aria-live="polite"></p>
-        <button class="button button-secondary quiz-next" id="next-question" type="button" hidden>Lanjut ke Tahap 2 →</button>
+        <button class="button button-secondary quiz-next" id="next-question" type="button" hidden>Soal berikutnya →</button>
       </article>
     </section>
 
-    <section class="quiz-result staged-result" id="quiz-result" hidden aria-live="polite">
-      <div class="result-ring"><strong id="final-score">0</strong><span>Nilai akhir</span></div>
-      <p class="eyebrow">Sepuluh tahap selesai</p>
+    <section class="quiz-result level-result" id="quiz-result" hidden aria-live="polite">
+      <div class="result-stage-chip" id="result-stage">TAHAP 1 SELESAI</div>
+      <div class="result-ring"><strong id="final-score">0</strong><span>dari 10</span></div>
+      <p class="eyebrow">Nilai tahap</p>
       <h2 id="result-title">Terus bertumbuh dalam Firman!</h2>
       <p id="result-message"></p>
-      <div class="result-summary"><span>Pemain<strong id="result-player">–</strong></span><span>Jawaban sesuai<strong id="correct-total">0/10</strong></span><span>Nilai terbaik<strong id="best-score">0</strong></span></div>
-      <p class="result-saved" id="result-saved">Menyimpan nilai ke panel admin…</p>
+      <div class="result-summary"><span>Pemain<strong id="result-player">–</strong></span><span>Jawaban benar<strong id="correct-total">0/5</strong></span><span>Status admin<strong id="save-status">Tersimpan</strong></span></div>
       <div class="result-actions">
-        <button class="button button-primary" id="play-again" type="button">Main lagi</button>
+        <button class="button button-primary" id="choose-another" type="button">Pilih Tahap Lain</button>
+        <button class="button button-secondary" id="retry-stage" type="button">Ulangi Tahap Ini</button>
         <a class="button button-secondary" href="alkitab.html">Baca Alkitab</a>
       </div>
     </section>
