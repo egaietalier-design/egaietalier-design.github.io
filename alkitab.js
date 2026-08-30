@@ -20,6 +20,124 @@ const BOOKS = [
 
 const SOURCE_ROOT = "https://raw.githubusercontent.com/OpenTranslationBible/open-bible/main/lang/id-ID";
 const cache = new Map();
+
+const SPIRITUAL_THEMES = [
+  {
+    title: "Tuhan adalah Pencipta",
+    words: ["menciptakan", "ciptaan", "langit dan bumi", "menjadikan"],
+    message: "Segala sesuatu berasal dari Tuhan dan hidup kita berada dalam tangan-Nya. Hargailah ciptaan-Nya dan jalani hidup sesuai kehendak-Nya."
+  },
+  {
+    title: "Belajar Taat kepada Tuhan",
+    words: ["taat", "perintah", "ketetapan", "melakukan firman", "mendengarkan suara"],
+    message: "Ketaatan membawa kita tetap berjalan dalam kehendak Tuhan. Lakukanlah Firman-Nya, termasuk dalam perkara sederhana."
+  },
+  {
+    title: "Hidup oleh Iman",
+    words: ["iman", "percaya", "mempercayai", "beriman"],
+    message: "Iman menolong kita tetap berharap walaupun belum melihat jawabannya. Percayalah bahwa Tuhan bekerja dengan cara dan waktu yang terbaik."
+  },
+  {
+    title: "Datanglah kepada Tuhan dalam Doa",
+    words: ["berdoa", "doanya", "permohonan", "berseru kepada"],
+    message: "Tuhan mendengar orang yang datang kepada-Nya dengan hati tulus. Ceritakan kebutuhanmu kepada Tuhan dan tetaplah tekun berdoa."
+  },
+  {
+    title: "Kasih yang Nyata",
+    words: ["mengasihi", "kasihilah", "kasih", "belas kasihan"],
+    message: "Kasih kepada Tuhan perlu terlihat melalui sikap kepada sesama. Pilihlah untuk peduli, menolong, dan memperlakukan orang lain dengan baik."
+  },
+  {
+    title: "Memaafkan dan Memulihkan",
+    words: ["mengampuni", "pengampunan", "diampuni", "memaafkan"],
+    message: "Pengampunan membebaskan hati dari kepahitan dan membuka jalan bagi pemulihan. Karena Tuhan mengampuni kita, belajarlah mengampuni sesama."
+  },
+  {
+    title: "Kembali kepada Tuhan",
+    words: ["bertobat", "pertobatan", "berbaliklah", "meninggalkan dosa"],
+    message: "Tuhan memberi kesempatan untuk meninggalkan jalan yang salah dan kembali kepada-Nya. Datanglah dengan jujur dan mulailah langkah yang baru."
+  },
+  {
+    title: "Hidup dalam Kekudusan",
+    words: ["kudus", "kekudusan", "menguduskan", "najis"],
+    message: "Tuhan memanggil umat-Nya hidup berbeda dan menjaga hati tetap bersih. Jauhilah yang jahat dan pilihlah yang berkenan kepada-Nya."
+  },
+  {
+    title: "Carilah Hikmat Tuhan",
+    words: ["hikmat", "bijaksana", "pengertian", "pengetahuan"],
+    message: "Hikmat Tuhan menolong kita mengambil keputusan yang benar. Dengarkan Firman-Nya dan jangan hanya mengandalkan pengertian sendiri."
+  },
+  {
+    title: "Jangan Takut",
+    words: ["jangan takut", "kuatkanlah", "teguhkanlah", "keberanian"],
+    message: "Tuhan menyertai kita di tengah keadaan yang menakutkan. Melangkahlah dengan berani karena pertolongan-Nya lebih besar daripada ketakutan kita."
+  },
+  {
+    title: "Tuhan Melindungi",
+    words: ["melindungi", "perlindungan", "tempat perlindungan", "menjaga engkau", "menaungi"],
+    message: "Tuhan adalah tempat perlindungan yang aman. Tetaplah dekat kepada-Nya dan serahkan kekhawatiranmu ke dalam tangan-Nya."
+  },
+  {
+    title: "Tuhan Memelihara",
+    words: ["memelihara", "memberi makan", "menyediakan", "mencukupi", "roti"],
+    message: "Tuhan mengetahui kebutuhan umat-Nya dan sanggup memelihara. Bersyukurlah atas yang ada dan tetap percaya kepada pemeliharaan-Nya."
+  },
+  {
+    title: "Pujilah Tuhan",
+    words: ["pujilah", "memuji", "nyanyikanlah", "bersyukur", "syukur"],
+    message: "Pujian mengingatkan kita kepada kebaikan dan kesetiaan Tuhan. Bersyukurlah bukan hanya saat keadaan mudah, tetapi juga ketika sedang berjuang."
+  },
+  {
+    title: "Hiduplah dengan Adil",
+    words: ["keadilan", "adil", "membela orang", "orang miskin", "anak yatim"],
+    message: "Tuhan memperhatikan keadilan dan kepedulian kepada yang lemah. Jadilah orang yang jujur, tidak pilih kasih, dan berani melakukan yang benar."
+  },
+  {
+    title: "Melayani dengan Setia",
+    words: ["melayani", "pelayanan", "hamba", "bersaksi", "memberitakan"],
+    message: "Tuhan memakai orang yang bersedia melayani dengan rendah hati. Lakukan bagianmu dengan setia supaya orang lain merasakan kasih Tuhan."
+  },
+  {
+    title: "Hidup Dipimpin Roh Kudus",
+    words: ["roh kudus", "dipenuhi roh", "buah roh", "karunia roh"],
+    message: "Roh Kudus menolong, menguatkan, dan memimpin orang percaya. Berilah ruang bagi-Nya untuk membentuk pikiran, perkataan, dan tindakanmu."
+  },
+  {
+    title: "Keselamatan di dalam Yesus",
+    words: ["juruselamat", "keselamatan", "diselamatkan", "anak manusia", "yesus kristus"],
+    message: "Yesus datang membawa keselamatan dan hidup yang baru. Terimalah kasih karunia-Nya dan ikutilah Dia dengan sungguh-sungguh."
+  },
+  {
+    title: "Pengharapan yang Hidup",
+    words: ["kebangkitan", "dibangkitkan", "hidup yang kekal", "pengharapan", "langit baru"],
+    message: "Di dalam Tuhan selalu ada pengharapan, bahkan ketika keadaan terasa gelap. Kemenangan-Nya menolong kita tetap teguh dan tidak menyerah."
+  },
+  {
+    title: "Tetap Tekun",
+    words: ["bertekun", "ketekunan", "bertahan", "sabar dalam", "jangan menjadi lelah"],
+    message: "Perjalanan iman membutuhkan ketekunan. Jangan menyerah ketika proses terasa panjang; Tuhan membentuk kita melalui setiap langkah."
+  },
+  {
+    title: "Hidup dalam Persatuan",
+    words: ["sehati", "satu tubuh", "persekutuan", "bersatu", "damai sejahtera"],
+    message: "Tuhan rindu umat-Nya hidup dalam kasih dan persatuan. Jagalah perkataan, selesaikan perbedaan dengan damai, dan saling menguatkan."
+  },
+  {
+    title: "Memberi dengan Sukacita",
+    words: ["memberi", "persembahan", "murah hati", "berbagi"],
+    message: "Apa yang kita miliki adalah titipan Tuhan. Berbagilah dengan tulus dan jadilah berkat bagi orang yang membutuhkan."
+  },
+  {
+    title: "Rendahkanlah Hatimu",
+    words: ["rendah hati", "kesombongan", "meninggikan diri", "merendahkan diri"],
+    message: "Tuhan berkenan kepada hati yang rendah dan mau diajar. Jangan mencari kehormatan sendiri; pakailah hidupmu untuk memuliakan Tuhan."
+  },
+  {
+    title: "Tuhan Setia pada Janji-Nya",
+    words: ["janji", "perjanjian", "menggenapi", "setia"],
+    message: "Tuhan tidak melupakan janji-Nya. Walaupun kita harus menunggu, kesetiaan-Nya menjadi alasan untuk tetap berharap."
+  }
+];
 const ui = {
   testament: document.querySelector("#testamentSelect"), book: document.querySelector("#bookSelect"),
   chapter: document.querySelector("#chapterSelect"), title: document.querySelector("#chapterTitle"),
@@ -34,7 +152,8 @@ const ui = {
   verseSelect: document.querySelector("#verseSelect"), quickPlay: document.querySelector("#quickPlayAudio"),
   selectionBar: document.querySelector("#verseSelectionBar"), selectedRef: document.querySelector("#selectedVerseReference"),
   selectedPreview: document.querySelector("#selectedVersePreview"), copyVerse: document.querySelector("#copyVerseButton"),
-  clearSelection: document.querySelector("#clearVerseSelection")
+  clearSelection: document.querySelector("#clearVerseSelection"), blessingTitle: document.querySelector("#blessingTitle"),
+  blessingText: document.querySelector("#blessingText"), blessingReference: document.querySelector("#blessingReference")
 };
 
 let currentBook = BOOKS[0];
@@ -105,6 +224,63 @@ function setNavigationState() {
   const atEnd = currentBook.index === BOOKS.length - 1 && currentChapter === currentBook.chapters;
   [ui.previous, ui.previousBottom].forEach(button => button.disabled = atStart);
   [ui.next, ui.nextBottom].forEach(button => button.disabled = atEnd);
+}
+
+function defaultSpiritualTheme() {
+  if (currentBook.index <= 4) return {
+    title: "Hidup menurut Firman Tuhan",
+    message: "Tuhan mengajar umat-Nya untuk mengenal kehendak-Nya dan hidup dalam ketaatan. Dengarkan Firman-Nya dan lakukan dengan hati yang sungguh."
+  };
+  if (currentBook.index <= 16) return {
+    title: "Tuhan bekerja dalam perjalanan hidup",
+    message: "Tuhan tetap bekerja melalui kemenangan, kegagalan, dan proses yang panjang. Tetaplah setia dan belajarlah melihat penyertaan-Nya."
+  };
+  if (currentBook.index <= 21) return {
+    title: "Hikmat untuk kehidupan",
+    message: "Firman Tuhan memberi hikmat untuk menghadapi kehidupan sehari-hari. Simpanlah kebenaran-Nya dalam hati dan pakailah dalam setiap keputusan."
+  };
+  if (currentBook.index <= 38) return {
+    title: "Dengarkan panggilan Tuhan",
+    message: "Tuhan memanggil umat-Nya meninggalkan yang salah dan kembali hidup benar. Teguran-Nya diberikan karena Ia mengasihi dan ingin memulihkan."
+  };
+  if (currentBook.index <= 42) return {
+    title: "Pandanglah kepada Yesus",
+    message: "Melalui kehidupan dan perkataan Yesus, kita mengenal kasih serta kehendak Allah. Ikutilah teladan-Nya dalam kehidupan sehari-hari."
+  };
+  if (currentBook.index === 43) return {
+    title: "Menjadi saksi Kristus",
+    message: "Tuhan memakai orang percaya untuk membawa kabar baik kepada sesama. Mintalah pertolongan Roh Kudus dan bersaksilah melalui hidupmu."
+  };
+  if (currentBook.index <= 64) return {
+    title: "Bertumbuh sebagai orang percaya",
+    message: "Iman bukan hanya diketahui, tetapi perlu terlihat dalam cara hidup. Bertumbuhlah dalam kasih, kekudusan, dan kesetiaan kepada Kristus."
+  };
+  return {
+    title: "Tetap setia sampai akhir",
+    message: "Tuhan memegang kendali dan kemenangan terakhir ada di dalam Dia. Tetaplah setia karena pengharapan orang percaya tidak akan sia-sia."
+  };
+}
+
+function renderSpiritualBlessing() {
+  const chapterText = currentVerses.map(verse => verse.text.toLowerCase()).join(" ");
+  let chosen = null;
+  let highestScore = 0;
+  SPIRITUAL_THEMES.forEach(theme => {
+    const score = theme.words.reduce((total, word) => total + chapterText.split(word).length - 1, 0);
+    if (score > highestScore) {
+      chosen = theme;
+      highestScore = score;
+    }
+  });
+  const theme = chosen || defaultSpiritualTheme();
+  const matchingVerse = chosen
+    ? currentVerses.find(verse => chosen.words.some(word => verse.text.toLowerCase().includes(word)))
+    : currentVerses[0];
+  ui.blessingTitle.textContent = theme.title;
+  ui.blessingText.textContent = theme.message;
+  ui.blessingReference.textContent = matchingVerse
+    ? `Renungkan: ${currentBook.name} ${currentChapter}:${matchingVerse.number}`
+    : `${currentBook.name} ${currentChapter}`;
 }
 
 function renderVerses(data) {
@@ -210,6 +386,7 @@ async function loadChapter({ scroll = true, direction = 0 } = {}) {
       cache.set(url, data);
     }
     renderVerses(data);
+    renderSpiritualBlessing();
     animatePageTurn(direction);
     ui.status.hidden = true;
     localStorage.setItem("erikson-last-reading", JSON.stringify({ slug: currentBook.slug, chapter: currentChapter }));
