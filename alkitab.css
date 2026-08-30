@@ -66,3 +66,36 @@
   .book-reader.turning-next .book-page-content,.book-reader.turning-previous .book-page-content,.book-reader.book-opening .book-page-content,
   .book-reader.turning-next:after,.book-reader.turning-previous:after{animation:none}
 }
+
+
+/* Kontrol di atas dan bacaan layar penuh */
+.reader-layout{grid-template-columns:minmax(0,1fr);gap:24px}
+.top-reader-controls{position:static;top:auto;display:grid;grid-template-columns:repeat(3,minmax(150px,1fr)) minmax(250px,1.15fr);align-items:start;gap:14px;width:100%;border-radius:22px;padding:20px}
+.top-reader-controls .reader-field{margin:0}
+.top-reader-controls .reader-nav-buttons{grid-column:1/4;grid-row:2}
+.top-reader-controls .audio-panel{grid-column:4;grid-row:1/3;margin:0}
+.top-reader-controls .reader-tip{grid-column:1/-1;grid-row:3;margin:0;border-top:1px solid var(--line);padding-top:12px}
+.scripture-card{width:100%}
+.bible-verse{position:relative;cursor:pointer;user-select:text}
+.bible-verse:hover{background:rgba(227,166,39,.09);box-shadow:inset 3px 0 0 rgba(227,166,39,.45)}
+.bible-verse:focus-visible{outline:2px solid #b77b22;outline-offset:2px}
+.verse-selection-bar{position:sticky;top:84px;z-index:7;display:grid;grid-template-columns:auto minmax(120px,1fr) auto auto;align-items:center;gap:14px;margin:10px 0 4px;border:1px solid rgba(180,120,32,.32);border-radius:15px;padding:11px 12px;background:rgba(255,247,218,.97);box-shadow:0 12px 30px rgba(66,45,18,.15);backdrop-filter:blur(10px)}
+.verse-selection-bar[hidden]{display:none}
+.verse-selection-bar>div{display:flex;flex-direction:column;gap:2px}.verse-selection-bar>div span{color:#896d44;font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.verse-selection-bar>div strong{color:#4c361e;font-family:Georgia,"Times New Roman",serif;font-size:15px;white-space:nowrap}
+.verse-selection-bar p{overflow:hidden;margin:0;color:#66513a;font-family:Georgia,"Times New Roman",serif;font-size:12px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
+.verse-selection-bar button{min-height:39px;border:0;border-radius:10px;padding:0 14px;background:#0b3562;color:#fff;cursor:pointer;font-size:11px;font-weight:900;white-space:nowrap}
+.verse-selection-bar #clearVerseSelection{width:36px;padding:0;background:rgba(83,59,31,.1);color:#5c462e;font-size:22px}
+@media(max-width:900px){
+ .top-reader-controls{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .top-reader-controls .reader-nav-buttons{grid-column:1/-1;grid-row:auto}
+ .top-reader-controls .audio-panel{grid-column:1/-1;grid-row:auto}
+ .top-reader-controls .reader-tip{grid-column:1/-1;grid-row:auto}
+}
+@media(max-width:620px){
+ .top-reader-controls{grid-template-columns:1fr;padding:16px}
+ .top-reader-controls .reader-field,.top-reader-controls .reader-nav-buttons,.top-reader-controls .audio-panel,.top-reader-controls .reader-tip{grid-column:1;grid-row:auto}
+ .top-reader-controls .reader-field{display:block}.top-reader-controls .reader-field label{margin-bottom:7px}
+ .verse-selection-bar{top:145px;grid-template-columns:1fr auto;margin-inline:-6px}
+ .verse-selection-bar>div,.verse-selection-bar p{grid-column:1/-1}.verse-selection-bar p{white-space:normal}
+ .verse-selection-bar #copyVerseButton{grid-column:1}.verse-selection-bar #clearVerseSelection{grid-column:2;grid-row:3}
+}
