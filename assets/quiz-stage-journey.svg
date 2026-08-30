@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 620" role="img" aria-labelledby="t d">
+<title id="t">Perjalanan Alkitab</title><desc id="d">Ilustrasi perjalanan dari Penciptaan sampai kota surgawi</desc>
+<defs>
+  <linearGradient id="sky" x1="0" x2="1"><stop stop-color="#071a45"/><stop offset=".34" stop-color="#176b9b"/><stop offset=".62" stop-color="#6b3c8e"/><stop offset="1" stop-color="#ff9b3d"/></linearGradient>
+  <linearGradient id="land" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#123c42"/><stop offset=".38" stop-color="#8c5f31"/><stop offset=".7" stop-color="#293b68"/><stop offset="1" stop-color="#5c311f"/></linearGradient>
+  <linearGradient id="path" x1="0" x2="1"><stop stop-color="#fff2a6"/><stop offset=".5" stop-color="#ffc857"/><stop offset="1" stop-color="#fff5bf"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="11" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-opacity=".35"/></filter>
+</defs>
+<rect width="1600" height="620" rx="34" fill="url(#sky)"/>
+<circle cx="125" cy="115" r="68" fill="#45b9ff" opacity=".9"/><path d="M73 99q53-55 106-11-12 21-2 47-41 43-95 7z" fill="#68ce75"/><ellipse cx="125" cy="115" rx="92" ry="28" fill="none" stroke="#9ce7ff" stroke-width="5" opacity=".65"/>
+<g fill="#fff9bd" filter="url(#glow)"><circle cx="270" cy="72" r="5"/><circle cx="374" cy="123" r="4"/><circle cx="1195" cy="86" r="6"/><circle cx="1470" cy="105" r="5"/></g>
+<path d="M0 410Q170 300 340 395T690 370T1030 385T1330 330T1600 360V620H0Z" fill="url(#land)"/>
+<g transform="translate(250 260)" fill="#4a281f" stroke="#f0ad59" stroke-width="5"><path d="M0 122h190L164 55H34Z"/><path d="M31 55 92 7l71 48"/><rect x="84" y="70" width="35" height="52" fill="#251714"/></g>
+<g transform="translate(520 232)"><path d="M20 190V55l54-42 54 42v135" fill="#9b663c" stroke="#f5c16c" stroke-width="5"/><path d="M74 13v177M20 58h108" stroke="#f5c16c" stroke-width="5"/><path d="M0 190h150" stroke="#6e3e28" stroke-width="18"/></g>
+<g transform="translate(705 265)" filter="url(#shadow)"><path d="M0 120 18 25l55 52 49-67 49 67 55-52 18 95z" fill="#ffd75d" stroke="#fff0a0" stroke-width="5"/><circle cx="73" cy="77" r="9" fill="#4ac3dc"/><circle cx="171" cy="77" r="9" fill="#a15ae8"/></g>
+<g transform="translate(995 250)"><path d="M25 0h100v175H25q-25-18 0-36-25-18 0-36-25-18 0-36-25-18 0-36Q0 14 25 0Z" fill="#f1d596" stroke="#7b4d32" stroke-width="5"/><path d="M50 37h54M50 66h43M50 95h57M50 124h38" stroke="#8a5c3a" stroke-width="7" stroke-linecap="round"/></g>
+<g transform="translate(1218 190)" fill="#ffe86d" filter="url(#glow)"><path d="m62 0 14 42 44 1-35 26 13 43-36-25-36 25 13-43L4 43l44-1z"/></g>
+<g transform="translate(1350 242)" fill="#f7ca70" stroke="#fff0b5" stroke-width="4"><path d="M0 160h205V72l-35 20V38l-45 35V0L90 60 50 35v66L0 80Z"/><path d="M25 160v-42h30v42m49 0v-55h31v55m30 0v-33h22v33"/></g>
+<path d="M60 535C330 420 380 575 650 485s350 92 570-20 285-32 340 13" fill="none" stroke="#9b6a20" stroke-width="42" opacity=".35" filter="url(#glow)"/>
+<path d="M60 520C330 405 380 560 650 470s350 92 570-20 285-32 340 13" fill="none" stroke="url(#path)" stroke-width="15" filter="url(#glow)"/>
+<g transform="translate(670 455)" filter="url(#shadow)"><path d="M0 35q100-55 200 0v105q-100-55-200 0z" fill="#fff1bd"/><path d="M200 35q100-55 200 0v105q-100-55-200 0z" fill="#ffe29a"/><path d="M200 35v105" stroke="#b8752e" stroke-width="7"/></g>
+</svg>
