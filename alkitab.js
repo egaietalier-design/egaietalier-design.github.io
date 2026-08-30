@@ -29,7 +29,9 @@ const ui = {
   nextBottom: document.querySelector("#nextChapterBottom"), play: document.querySelector("#playAudio"),
   pause: document.querySelector("#pauseAudio"), stop: document.querySelector("#stopAudio"),
   speed: document.querySelector("#audioSpeed"), audioStatus: document.querySelector("#audioStatus"),
-  share: document.querySelector("#shareChapter")
+  share: document.querySelector("#shareChapter"), card: document.querySelector("#bookReader"),
+  quickBook: document.querySelector("#quickBookSelect"), quickChapter: document.querySelector("#quickChapterSelect"),
+  verseSelect: document.querySelector("#verseSelect"), quickPlay: document.querySelector("#quickPlayAudio")
 };
 
 let currentBook = BOOKS[0];
@@ -49,30 +51,43 @@ function getInitialReading() {
   return { book: found, chapter: Math.min(found.chapters, Math.max(1, requested || 1)) };
 }
 
-function fillBooks(keepCurrent = true) {
-  const filter = ui.testament.value;
-  const visible = BOOKS.filter(book => filter === "all" || book.testament === filter);
-  if (!keepCurrent || !visible.includes(currentBook)) currentBook = visible[0];
-  ui.book.replaceChildren(...visible.map(book => {
+function makeBookOptions(books) {
+  return books.map(book => {
     const option = document.createElement("option");
     option.value = book.slug;
     option.textContent = `${book.name} (${book.testament})`;
     option.selected = book === currentBook;
     return option;
-  }));
-  fillChapters();
+  });
 }
 
-function fillChapters() {
-  currentChapter = Math.min(currentChapter, currentBook.chapters);
-  const options = Array.from({ length: currentBook.chapters }, (_, index) => {
+function makeChapterOptions() {
+  return Array.from({ length: currentBook.chapters }, (_, index) => {
     const option = document.createElement("option");
     option.value = String(index + 1);
     option.textContent = `Pasal ${index + 1}`;
     option.selected = index + 1 === currentChapter;
     return option;
   });
-  ui.chapter.replaceChildren(...options);
+}
+
+function fillBooks(keepCurrent = true) {
+  const filter = ui.testament.value;
+  const visible = BOOKS.filter(book => filter === "all" || book.testament === filter);
+  if (!keepCurrent || !visible.includes(currentBook)) currentBook = visible[0];
+  ui.book.replaceChildren(...makeBookOptions(visible));
+  ui.quickBook.replaceChildren(...makeBookOptions(BOOKS));
+  fillChapters();
+}
+
+function fillChapters() {
+  currentChapter = Math.min(currentChapter, currentBook.chapters);
+  ui.chapter.replaceChildren(...makeChapterOptions());
+  ui.quickChapter.replaceChildren(...makeChapterOptions());
+  ui.book.value = currentBook.slug;
+  ui.quickBook.value = currentBook.slug;
+  ui.chapter.value = String(currentChapter);
+  ui.quickChapter.value = String(currentChapter);
 }
 
 function chapterUrl(book, chapter) {
@@ -103,9 +118,33 @@ function renderVerses(data) {
     fragment.append(paragraph);
   });
   ui.verses.replaceChildren(fragment);
+  ui.verseSelect.replaceChildren(...currentVerses.map(verse => {
+    const option = document.createElement("option");
+    option.value = String(verse.number);
+    option.textContent = `Ayat ${verse.number}`;
+    return option;
+  }));
 }
 
-async function loadChapter({ scroll = true } = {}) {
+function animatePageTurn(direction = 0) {
+  const animation = direction > 0 ? "turning-next" : direction < 0 ? "turning-previous" : "book-opening";
+  ui.card.classList.remove("turning-next", "turning-previous", "book-opening");
+  void ui.card.offsetWidth;
+  ui.card.classList.add(animation);
+  setTimeout(() => ui.card.classList.remove(animation), 760);
+}
+
+function jumpToVerse() {
+  const verseNumber = Number(ui.verseSelect.value);
+  const target = document.querySelector(`[data-verse="${verseNumber}"]`);
+  if (!target) return;
+  document.querySelectorAll(".bible-verse.selected").forEach(element => element.classList.remove("selected"));
+  target.classList.add("selected");
+  target.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => target.classList.remove("selected"), 1800);
+}
+
+async function loadChapter({ scroll = true, direction = 0 } = {}) {
   stopAudio();
   ui.status.hidden = false;
   ui.status.textContent = "Memuat ayat...";
@@ -124,6 +163,7 @@ async function loadChapter({ scroll = true } = {}) {
       cache.set(url, data);
     }
     renderVerses(data);
+    animatePageTurn(direction);
     ui.status.hidden = true;
     localStorage.setItem("erikson-last-reading", JSON.stringify({ slug: currentBook.slug, chapter: currentChapter }));
     const params = new URLSearchParams({ kitab: currentBook.slug, pasal: String(currentChapter) });
@@ -154,7 +194,7 @@ function moveChapter(direction) {
   ui.book.value = currentBook.slug;
   fillChapters();
   ui.chapter.value = String(currentChapter);
-  loadChapter();
+  loadChapter({ direction });
 }
 
 function clearSpeakingVerse() {
@@ -172,6 +212,7 @@ function stopAudio() {
   ui.pause.textContent = "⏸ Jeda";
   ui.stop.disabled = true;
   ui.audioStatus.textContent = "Siap dibacakan.";
+  ui.quickPlay.textContent = "🔊 Dengarkan";
 }
 
 function speakVerse(session) {
@@ -189,8 +230,8 @@ function speakVerse(session) {
   if (element && (element.getBoundingClientRect().top < 100 || element.getBoundingClientRect().bottom > innerHeight - 50)) {
     element.scrollIntoView({ behavior: "smooth", block: "center" });
   }
-  ui.audioStatus.textContent = `Membaca ayat ${verse.number} dari ${currentVerses.length}`;
-  const utterance = new SpeechSynthesisUtterance(`Ayat ${verse.number}. ${verse.text}`);
+  ui.audioStatus.textContent = `Membaca bagian ${audioIndex + 1} dari ${currentVerses.length}`;
+  const utterance = new SpeechSynthesisUtterance(verse.text);
   utterance.lang = "id-ID";
   utterance.rate = Number(ui.speed.value);
   const voices = speechSynthesis.getVoices();
@@ -216,11 +257,14 @@ function playAudio() {
   if (!currentVerses.length) return;
   speechSynthesis.cancel();
   audioSession += 1;
-  audioIndex = 0;
+  const selectedVerse = Number(ui.verseSelect.value);
+  const selectedIndex = currentVerses.findIndex(verse => verse.number === selectedVerse);
+  audioIndex = selectedIndex >= 0 ? selectedIndex : 0;
   isSpeaking = true;
   ui.play.disabled = true;
   ui.pause.disabled = false;
   ui.stop.disabled = false;
+  ui.quickPlay.textContent = "■ Berhenti";
   speakVerse(audioSession);
 }
 
@@ -229,7 +273,7 @@ function pauseAudio() {
   if (speechSynthesis.paused) {
     speechSynthesis.resume();
     ui.pause.textContent = "⏸ Jeda";
-    ui.audioStatus.textContent = `Melanjutkan ayat ${currentVerses[audioIndex]?.number || ""}`;
+    ui.audioStatus.textContent = "Melanjutkan bacaan.";
   } else {
     speechSynthesis.pause();
     ui.pause.textContent = "▶ Lanjut";
@@ -253,12 +297,26 @@ async function shareChapter() {
 
 ui.testament.addEventListener("change", () => { currentChapter = 1; fillBooks(false); loadChapter(); });
 ui.book.addEventListener("change", () => { currentBook = BOOKS.find(book => book.slug === ui.book.value); currentChapter = 1; fillChapters(); loadChapter(); });
-ui.chapter.addEventListener("change", () => { currentChapter = Number(ui.chapter.value); loadChapter(); });
+ui.chapter.addEventListener("change", () => { currentChapter = Number(ui.chapter.value); fillChapters(); loadChapter(); });
+ui.quickBook.addEventListener("change", () => {
+  currentBook = BOOKS.find(book => book.slug === ui.quickBook.value);
+  currentChapter = 1;
+  ui.testament.value = "all";
+  fillBooks();
+  loadChapter();
+});
+ui.quickChapter.addEventListener("change", () => {
+  currentChapter = Number(ui.quickChapter.value);
+  fillChapters();
+  loadChapter();
+});
+ui.verseSelect.addEventListener("change", jumpToVerse);
 [ui.previous, ui.previousBottom].forEach(button => button.addEventListener("click", () => moveChapter(-1)));
 [ui.next, ui.nextBottom].forEach(button => button.addEventListener("click", () => moveChapter(1)));
 ui.play.addEventListener("click", playAudio);
 ui.pause.addEventListener("click", pauseAudio);
 ui.stop.addEventListener("click", stopAudio);
+ui.quickPlay.addEventListener("click", () => isSpeaking ? stopAudio() : playAudio());
 ui.share.addEventListener("click", shareChapter);
 addEventListener("beforeunload", () => window.speechSynthesis?.cancel());
 
