@@ -110,6 +110,7 @@
           <div><span>Ayat dipilih</span><strong id="selectedVerseReference">—</strong></div>
           <p id="selectedVersePreview"></p>
           <button id="copyVerseButton" type="button">📋 Salin Ayat</button>
+          <button id="openSermonStudio" class="open-sermon-button" type="button">🎙️ Buat Khotbah</button>
           <button id="clearVerseSelection" type="button" aria-label="Batalkan pilihan ayat">×</button>
         </div>
 
@@ -132,6 +133,47 @@
           <span class="page-instruction">Geser halaman melalui tombol ini</span>
           <button id="nextChapterBottom" type="button">Pasal berikutnya →</button>
         </div>
+      </article>
+    </section>
+
+    <section class="sermon-studio" id="sermonStudio" aria-labelledby="sermonStudioTitle">
+      <div class="sermon-studio-heading">
+        <div>
+          <p class="eyebrow">Studio Khotbah</p>
+          <h2 id="sermonStudioTitle">Susun bahan khotbah dari ayat pilihan</h2>
+          <p>Pilih satu atau beberapa ayat di atas. Website akan menyusunnya menjadi draf khotbah yang rapi dan siap dikembangkan.</p>
+        </div>
+        <span class="sermon-mic" aria-hidden="true">🎙️</span>
+      </div>
+
+      <div class="sermon-builder">
+        <div class="sermon-selected">
+          <small>AYAT YANG AKAN DIJELASKAN</small>
+          <strong id="sermonSelectedReferences">Belum ada ayat dipilih</strong>
+          <p id="sermonSelectedPreview">Klik beberapa ayat pada halaman Alkitab.</p>
+        </div>
+        <div class="sermon-options">
+          <label for="sermonDuration">Durasi khotbah
+            <select id="sermonDuration">
+              <option value="15">15 menit</option>
+              <option value="30" selected>30 menit</option>
+              <option value="45">45 menit</option>
+            </select>
+          </label>
+          <label class="sermon-check"><input id="includeExegesis" type="checkbox" checked> Eksegese & konteks</label>
+          <label class="sermon-check"><input id="includeOriginalLanguage" type="checkbox" checked> Bahasa Ibrani/Yunani</label>
+          <label class="sermon-check"><input id="includeApplication" type="checkbox" checked> Ilustrasi & aplikasi</label>
+        </div>
+        <button id="generateSermon" class="generate-sermon" type="button" disabled>Susun Bahan Khotbah</button>
+        <p class="sermon-caution">Gunakan sebagai draf pelayanan. Periksa kembali konteks, terjemahan, dan sumber bahasa asli sebelum berkhotbah.</p>
+      </div>
+
+      <article class="sermon-output" id="sermonOutput" hidden>
+        <div class="sermon-output-toolbar">
+          <div><small>HASIL BAHAN KHOTBAH</small><strong id="sermonOutputTitle">Bahan Khotbah</strong></div>
+          <button id="copySermon" type="button">📋 Salin Semua</button>
+        </div>
+        <div id="sermonContent" class="sermon-content"></div>
       </article>
     </section>
 
