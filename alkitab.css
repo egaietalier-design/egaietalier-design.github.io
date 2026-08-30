@@ -79,7 +79,7 @@
 .bible-verse{position:relative;cursor:pointer;user-select:text}
 .bible-verse:hover{background:rgba(227,166,39,.09);box-shadow:inset 3px 0 0 rgba(227,166,39,.45)}
 .bible-verse:focus-visible{outline:2px solid #b77b22;outline-offset:2px}
-.verse-selection-bar{position:sticky;top:84px;z-index:7;display:grid;grid-template-columns:auto minmax(120px,1fr) auto auto;align-items:center;gap:14px;margin:10px 0 4px;border:1px solid rgba(180,120,32,.32);border-radius:15px;padding:11px 12px;background:rgba(255,247,218,.97);box-shadow:0 12px 30px rgba(66,45,18,.15);backdrop-filter:blur(10px)}
+.verse-selection-bar{position:sticky;top:84px;z-index:7;display:grid;grid-template-columns:auto minmax(120px,1fr) auto auto auto;align-items:center;gap:14px;margin:10px 0 4px;border:1px solid rgba(180,120,32,.32);border-radius:15px;padding:11px 12px;background:rgba(255,247,218,.97);box-shadow:0 12px 30px rgba(66,45,18,.15);backdrop-filter:blur(10px)}
 .verse-selection-bar[hidden]{display:none}
 .verse-selection-bar>div{display:flex;flex-direction:column;gap:2px}.verse-selection-bar>div span{color:#896d44;font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.verse-selection-bar>div strong{color:#4c361e;font-family:Georgia,"Times New Roman",serif;font-size:15px;white-space:nowrap}
 .verse-selection-bar p{overflow:hidden;margin:0;color:#66513a;font-family:Georgia,"Times New Roman",serif;font-size:12px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
@@ -115,4 +115,37 @@
  .blessing-symbol{width:42px;height:42px;font-size:19px}
  .spiritual-blessing h3{font-size:20px}
  .spiritual-blessing div>p:not(.blessing-label){font-size:13px}
+}
+
+
+/* Studio Khotbah */
+.verse-selection-bar .open-sermon-button{background:linear-gradient(135deg,#a46b16,#d79b2c);box-shadow:0 7px 16px rgba(164,107,22,.22)}
+.sermon-studio{scroll-margin-top:24px;margin:0 0 44px;border:1px solid rgba(14,61,101,.2);border-radius:28px;padding:clamp(22px,4vw,42px);background:
+ radial-gradient(circle at 92% 8%,rgba(227,166,39,.2),transparent 26%),
+ linear-gradient(145deg,#092e54,#0f4f82);box-shadow:0 26px 70px rgba(11,53,98,.22);color:#fff}
+.sermon-studio-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px}
+.sermon-studio-heading .eyebrow{color:#f4c665}.sermon-studio-heading h2{margin:5px 0 8px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(30px,4vw,48px);font-weight:500}
+.sermon-studio-heading p:last-child{max-width:650px;margin:0;color:#d5e5f1;line-height:1.65}
+.sermon-builder{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:18px}
+.sermon-selected,.sermon-options{border:1px solid rgba(255,255,255,.14);border-radius:19px;padding:20px;background:rgba(255,255,255,.08);backdrop-filter:blur(8px)}
+.sermon-selected span,.sermon-options>label>span{display:block;margin-bottom:7px;color:#f4c665;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.sermon-selected strong{display:block;margin-bottom:8px;font-family:Georgia,"Times New Roman",serif;font-size:19px}.sermon-selected p{margin:0;color:#dbe7f1;font-family:Georgia,"Times New Roman",serif;font-size:13px;line-height:1.55}
+.sermon-options{display:grid;gap:11px}.sermon-options select{width:100%;height:43px;border:1px solid rgba(255,255,255,.2);border-radius:11px;padding:0 12px;background:#174e78;color:#fff;font:inherit}
+.sermon-check{display:flex;align-items:flex-start;gap:9px;color:#eef6fb;font-size:12px;line-height:1.45}.sermon-check input{width:17px;height:17px;margin-top:1px;accent-color:#e3a627}
+.generate-sermon{min-height:47px;border:0;border-radius:12px;background:linear-gradient(135deg,#f7d373,#e3a627);box-shadow:0 10px 24px rgba(227,166,39,.22);color:#0b3562;cursor:pointer;font-weight:900}.generate-sermon:hover{transform:translateY(-1px)}
+.sermon-caution{grid-column:1/-1;margin:0;color:#bed2e2;font-size:11px;line-height:1.55}
+.sermon-output{margin-top:26px;border-radius:22px;padding:clamp(18px,4vw,38px);background:#fffdf7;color:#392f26;box-shadow:inset 0 0 0 1px rgba(111,76,38,.16)}
+.sermon-output[hidden]{display:none}.sermon-output-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid #e7dcc8;padding-bottom:17px}
+.sermon-output-toolbar h3{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:26px}.sermon-output-toolbar button{min-height:41px;border:0;border-radius:10px;padding:0 15px;background:#0b568c;color:#fff;cursor:pointer;font-weight:900}
+.sermon-content{padding-top:22px;font-size:15px;line-height:1.72}.sermon-content h3,.sermon-content h4{color:#153f63;font-family:Georgia,"Times New Roman",serif}.sermon-content h3{margin:30px 0 10px;font-size:24px}.sermon-content h4{margin:18px 0 7px;font-size:18px}.sermon-content p{margin:8px 0}.sermon-content blockquote{margin:16px 0;border-left:4px solid #d89c25;padding:12px 17px;background:#fff4d2;color:#4d3a28;font-family:Georgia,"Times New Roman",serif}
+.sermon-cover{border-radius:17px;padding:24px;background:linear-gradient(145deg,#eaf3f9,#fff6dc)}.sermon-kicker{margin:0!important;color:#a46b16;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.sermon-cover h2{margin:6px 0 10px;color:#0b3562;font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,4vw,42px);line-height:1.1}.sermon-pacing{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.sermon-pacing span{border-radius:999px;padding:6px 10px;background:#fff;color:#36546d;font-size:10px;font-weight:800}
+.verse-explanations,.original-word-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.verse-explanations article,.original-word-grid article,.sermon-point{border:1px solid #e6dccb;border-radius:14px;padding:16px;background:#fff}.language-note{border-radius:12px;padding:12px 14px;background:#fff2c9;color:#6a4b1e;font-size:12px}.sermon-point{margin:12px 0}.sermon-prayer{border-radius:16px;padding:20px;background:#e9f2f8;color:#274860;font-style:italic}
+@media(max-width:760px){
+ .sermon-studio-heading{align-items:flex-start;flex-direction:column}.sermon-builder{grid-template-columns:1fr}
+ .verse-explanations,.original-word-grid{grid-template-columns:1fr}.sermon-output-toolbar{align-items:flex-start;flex-direction:column}.sermon-output-toolbar button{width:100%}
+}
+@media(max-width:620px){
+ .verse-selection-bar #copyVerseButton{grid-column:1}.verse-selection-bar .open-sermon-button{grid-column:1}
+ .verse-selection-bar #clearVerseSelection{grid-column:2;grid-row:4}
+ .sermon-studio{border-radius:20px;margin-inline:-2px;padding:19px 14px}.sermon-selected,.sermon-options{padding:16px}
 }
