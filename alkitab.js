@@ -138,6 +138,25 @@ const SPIRITUAL_THEMES = [
     message: "Tuhan tidak melupakan janji-Nya. Walaupun kita harus menunggu, kesetiaan-Nya menjadi alasan untuk tetap berharap."
   }
 ];
+const ORIGINAL_LANGUAGE_TERMS = [
+  { keys: ["kasih", "mengasihi"], he: ["אַהֲבָה", "ahavah", "kasih yang dinyatakan melalui kesetiaan dan tindakan"], gr: ["ἀγάπη", "agapē", "kasih yang memberi diri dan mengutamakan kebaikan orang lain"] },
+  { keys: ["percaya", "iman", "setia"], he: ["אֱמוּנָה", "emunah", "keteguhan, kesetiaan, dan kepercayaan"], gr: ["πίστις", "pistis", "iman, kepercayaan, dan kesetiaan"] },
+  { keys: ["anugerah", "kasih karunia"], he: ["חֵן", "chen", "kemurahan atau perkenanan"], gr: ["χάρις", "charis", "anugerah dan pemberian yang tidak diperoleh karena jasa"] },
+  { keys: ["damai", "damai sejahtera"], he: ["שָׁלוֹם", "shalom", "keutuhan, kesejahteraan, dan damai"], gr: ["εἰρήνη", "eirēnē", "damai, keharmonisan, dan pemulihan"] },
+  { keys: ["selamat", "keselamatan", "menyelamatkan"], he: ["יְשׁוּעָה", "yeshuah", "pertolongan dan keselamatan dari Tuhan"], gr: ["σωτηρία", "sōtēria", "keselamatan, pembebasan, dan pemulihan"] },
+  { keys: ["roh", "napas"], he: ["רוּחַ", "ruach", "roh, angin, atau napas"], gr: ["πνεῦμα", "pneuma", "roh, angin, atau napas; sering dipakai untuk Roh Kudus"] },
+  { keys: ["kudus", "kekudusan"], he: ["קָדוֹשׁ", "qadosh", "dipisahkan dan dikhususkan bagi Tuhan"], gr: ["ἅγιος", "hagios", "kudus atau dikhususkan bagi Allah"] },
+  { keys: ["firman", "perkataan", "berkata"], he: ["דָּבָר", "dabar", "firman, perkataan, atau perkara yang berkuasa"], gr: ["λόγος", "logos", "firman, pesan, perkataan, atau makna"] },
+  { keys: ["hikmat", "bijaksana"], he: ["חָכְמָה", "chokmah", "kecakapan hidup menurut kehendak Tuhan"], gr: ["σοφία", "sophia", "hikmat untuk memahami dan menjalani kebenaran"] },
+  { keys: ["bertobat", "berbalik"], he: ["שׁוּב", "shuv", "berbalik atau kembali kepada Tuhan"], gr: ["μετάνοια", "metanoia", "perubahan pikiran yang menghasilkan perubahan hidup"] },
+  { keys: ["hamba", "melayani", "pelayanan"], he: ["עֶבֶד", "eved", "hamba atau pelayan yang tunduk"], gr: ["δοῦλος", "doulos", "hamba yang menjadi milik dan taat kepada tuannya"] },
+  { keys: ["kerajaan", "raja"], he: ["מַלְכוּת", "malkut", "pemerintahan atau kekuasaan raja"], gr: ["βασιλεία", "basileia", "pemerintahan dan kekuasaan Allah"] },
+  { keys: ["benar", "kebenaran", "adil"], he: ["צְדָקָה", "tsedaqah", "kebenaran dan keadilan dalam relasi"], gr: ["δικαιοσύνη", "dikaiosynē", "kebenaran atau keadaan benar di hadapan Allah"] },
+  { keys: ["harap", "pengharapan"], he: ["תִּקְוָה", "tiqvah", "harapan yang dinantikan dengan teguh"], gr: ["ἐλπίς", "elpis", "pengharapan yang yakin kepada janji Allah"] },
+  { keys: ["perjanjian", "janji"], he: ["בְּרִית", "berit", "perjanjian yang mengikat"], gr: ["διαθήκη", "diathēkē", "perjanjian atau ketetapan yang diteguhkan"] },
+  { keys: ["menyembah", "sembah", "sujud"], he: ["שָׁחָה", "shachah", "membungkuk atau sujud dalam penyembahan"], gr: ["προσκυνέω", "proskyneō", "bersujud dan memberi hormat dalam penyembahan"] }
+];
+
 const ui = {
   testament: document.querySelector("#testamentSelect"), book: document.querySelector("#bookSelect"),
   chapter: document.querySelector("#chapterSelect"), title: document.querySelector("#chapterTitle"),
@@ -153,7 +172,14 @@ const ui = {
   selectionBar: document.querySelector("#verseSelectionBar"), selectedRef: document.querySelector("#selectedVerseReference"),
   selectedPreview: document.querySelector("#selectedVersePreview"), copyVerse: document.querySelector("#copyVerseButton"),
   clearSelection: document.querySelector("#clearVerseSelection"), blessingTitle: document.querySelector("#blessingTitle"),
-  blessingText: document.querySelector("#blessingText"), blessingReference: document.querySelector("#blessingReference")
+  blessingText: document.querySelector("#blessingText"), blessingReference: document.querySelector("#blessingReference"),
+  openSermon: document.querySelector("#openSermonStudio"), sermonStudio: document.querySelector("#sermonStudio"),
+  sermonRefs: document.querySelector("#sermonSelectedReferences"), sermonPreview: document.querySelector("#sermonSelectedPreview"),
+  sermonDuration: document.querySelector("#sermonDuration"), includeExegesis: document.querySelector("#includeExegesis"),
+  includeOriginal: document.querySelector("#includeOriginalLanguage"), includeApplication: document.querySelector("#includeApplication"),
+  generateSermon: document.querySelector("#generateSermon"), sermonOutput: document.querySelector("#sermonOutput"),
+  sermonOutputTitle: document.querySelector("#sermonOutputTitle"), sermonContent: document.querySelector("#sermonContent"),
+  copySermon: document.querySelector("#copySermon")
 };
 
 let currentBook = BOOKS[0];
@@ -162,7 +188,7 @@ let currentVerses = [];
 let audioIndex = 0;
 let audioSession = 0;
 let isSpeaking = false;
-let selectedVerse = null;
+let selectedVerses = [];
 
 function getInitialReading() {
   const params = new URLSearchParams(location.search);
@@ -302,7 +328,7 @@ function renderVerses(data) {
     fragment.append(paragraph);
   });
   ui.verses.replaceChildren(fragment);
-  clearSelectedVerse();
+  clearSelectedVerses();
   ui.verseSelect.replaceChildren(...currentVerses.map(verse => {
     const option = document.createElement("option");
     option.value = String(verse.number);
@@ -319,38 +345,75 @@ function animatePageTurn(direction = 0) {
   setTimeout(() => ui.card.classList.remove(animation), 760);
 }
 
-function clearSelectedVerse() {
-  selectedVerse = null;
-  document.querySelectorAll(".bible-verse.selected").forEach(element => element.classList.remove("selected"));
-  ui.selectionBar.hidden = true;
-  ui.selectedRef.textContent = "—";
-  ui.selectedPreview.textContent = "";
-  ui.copyVerse.textContent = "📋 Salin Ayat";
+function groupVerseNumbers(numbers) {
+  if (!numbers.length) return "";
+  const groups = [];
+  let start = numbers[0];
+  let previous = numbers[0];
+  numbers.slice(1).forEach(number => {
+    if (number === previous + 1) {
+      previous = number;
+      return;
+    }
+    groups.push(start === previous ? String(start) : `${start}–${previous}`);
+    start = number;
+    previous = number;
+  });
+  groups.push(start === previous ? String(start) : `${start}–${previous}`);
+  return groups.join(", ");
 }
 
-function selectVerse(verseNumber, { scroll = false } = {}) {
+function selectedPassageReference() {
+  const numbers = selectedVerses.map(verse => verse.number).sort((a, b) => a - b);
+  return numbers.length ? `${currentBook.name} ${currentChapter}:${groupVerseNumbers(numbers)}` : "";
+}
+
+function updateSelectionUI() {
+  document.querySelectorAll(".bible-verse.selected").forEach(element => element.classList.remove("selected"));
+  selectedVerses.forEach(verse => document.querySelector(`[data-verse="${verse.number}"]`)?.classList.add("selected"));
+  const hasSelection = selectedVerses.length > 0;
+  ui.selectionBar.hidden = !hasSelection;
+  ui.generateSermon.disabled = !hasSelection;
+  if (!hasSelection) {
+    ui.selectedRef.textContent = "—";
+    ui.selectedPreview.textContent = "";
+    ui.sermonRefs.textContent = "Belum ada ayat dipilih";
+    ui.sermonPreview.textContent = "Klik beberapa ayat pada halaman Alkitab.";
+    ui.copyVerse.textContent = "📋 Salin Ayat";
+    return;
+  }
+  const reference = selectedPassageReference();
+  ui.selectedRef.textContent = selectedVerses.length === 1 ? reference : `${selectedVerses.length} ayat dipilih`;
+  ui.selectedPreview.textContent = selectedVerses.map(verse => `${verse.number}. ${verse.text}`).join(" • ");
+  ui.sermonRefs.textContent = reference;
+  ui.sermonPreview.textContent = selectedVerses.map(verse => `${verse.number}. ${verse.text}`).join(" ");
+  ui.copyVerse.textContent = selectedVerses.length === 1 ? "📋 Salin Ayat" : `📋 Salin ${selectedVerses.length} Ayat`;
+}
+
+function clearSelectedVerses() {
+  selectedVerses = [];
+  updateSelectionUI();
+  ui.sermonOutput.hidden = true;
+}
+
+function selectVerse(verseNumber, { scroll = false, toggle = true } = {}) {
   const verse = currentVerses.find(item => item.number === Number(verseNumber));
   const target = document.querySelector(`[data-verse="${verseNumber}"]`);
   if (!verse || !target) return;
-  selectedVerse = verse;
-  document.querySelectorAll(".bible-verse.selected").forEach(element => element.classList.remove("selected"));
-  target.classList.add("selected");
+  const existingIndex = selectedVerses.findIndex(item => item.number === verse.number);
+  if (existingIndex >= 0 && toggle) selectedVerses.splice(existingIndex, 1);
+  else if (existingIndex < 0) selectedVerses.push(verse);
+  selectedVerses.sort((a, b) => a.number - b.number);
   ui.verseSelect.value = String(verse.number);
-  ui.selectedRef.textContent = `${currentBook.name} ${currentChapter}:${verse.number}`;
-  ui.selectedPreview.textContent = verse.text;
-  ui.selectionBar.hidden = false;
-  ui.copyVerse.textContent = "📋 Salin Ayat";
+  updateSelectionUI();
   if (scroll) target.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function jumpToVerse() {
-  selectVerse(Number(ui.verseSelect.value), { scroll: true });
+  selectVerse(Number(ui.verseSelect.value), { scroll: true, toggle: false });
 }
 
-async function copySelectedVerse() {
-  if (!selectedVerse) return;
-  const reference = `${currentBook.name} ${currentChapter}:${selectedVerse.number}`;
-  const text = `${reference}\n${selectedVerse.text}`;
+async function writeClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
   } catch (error) {
@@ -363,8 +426,205 @@ async function copySelectedVerse() {
     document.execCommand("copy");
     area.remove();
   }
+}
+
+async function copySelectedVerses() {
+  if (!selectedVerses.length) return;
+  const text = `${selectedPassageReference()}\n${selectedVerses.map(verse => `${verse.number}. ${verse.text}`).join("\n")}`;
+  await writeClipboard(text);
   ui.copyVerse.textContent = "✓ Ayat Tersalin";
-  setTimeout(() => { if (selectedVerse) ui.copyVerse.textContent = "📋 Salin Ayat"; }, 1800);
+  setTimeout(() => { if (selectedVerses.length) updateSelectionUI(); }, 1800);
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  })[character]);
+}
+
+function analyzeSelectedTheme() {
+  const passage = selectedVerses.map(verse => verse.text.toLowerCase()).join(" ");
+  let chosen = null;
+  let highest = 0;
+  SPIRITUAL_THEMES.forEach(theme => {
+    const score = theme.words.reduce((total, word) => total + passage.split(word).length - 1, 0);
+    if (score > highest) {
+      chosen = theme;
+      highest = score;
+    }
+  });
+  return chosen || defaultSpiritualTheme();
+}
+
+function bookContext() {
+  if (currentBook.index <= 4) return "Bagian ini berada dalam kitab Taurat, yang menolong umat mengenal karya, perjanjian, dan kehendak Tuhan.";
+  if (currentBook.index <= 16) return "Bagian ini berada dalam kitab sejarah. Peristiwa di dalamnya memperlihatkan karya Tuhan sekaligus respons manusia.";
+  if (currentBook.index <= 21) return "Bagian ini termasuk sastra hikmat dan puisi. Bahasa yang dipakai perlu dibaca sebagai ungkapan iman, hikmat, doa, atau perenungan.";
+  if (currentBook.index <= 38) return "Bagian ini berada dalam kitab para nabi. Pesannya memuat teguran, panggilan untuk kembali kepada Tuhan, dan pengharapan pemulihan.";
+  if (currentBook.index <= 42) return "Bagian ini berada dalam Injil dan perlu dibaca dalam terang kehidupan, pengajaran, karya, kematian, dan kebangkitan Yesus.";
+  if (currentBook.index === 43) return "Bagian ini berada dalam Kisah Para Rasul, yang menceritakan karya Roh Kudus dan pertumbuhan kesaksian gereja mula-mula.";
+  if (currentBook.index <= 64) return "Bagian ini berada dalam surat Perjanjian Baru. Perhatikan penerima awal surat, masalah yang dihadapi, dan penerapannya bagi gereja.";
+  return "Bagian ini berada dalam kitab Wahyu dan memakai banyak simbol. Bacalah dengan memperhatikan pengharapan, kesetiaan, dan kemenangan Allah.";
+}
+
+function explainSelectedVerse(verse, theme) {
+  const text = verse.text.toLowerCase();
+  if (/jangan|hendaklah|harus|lakukan|taat/.test(text)) return "Ayat ini memuat arahan yang menuntut respons nyata. Kebenaran tidak cukup diketahui; kebenaran perlu dilakukan dalam kehidupan.";
+  if (/akan|janji|setia|perjanjian/.test(text)) return "Ayat ini mengarahkan perhatian kepada janji dan kesetiaan Tuhan. Dasar pengharapan kita bukan keadaan, melainkan karakter Tuhan yang dapat dipercaya.";
+  if (/tuhan|allah|yesus|roh kudus/.test(text)) return `Ayat ini menolong kita melihat karya dan karakter Tuhan. Pesan utamanya sejalan dengan tema “${theme.title}” dan mengundang kita menanggapi-Nya dengan iman.`;
+  if (/kasih|mengampuni|menolong|memberi/.test(text)) return "Ayat ini menunjukkan bahwa iman memiliki akibat dalam hubungan dengan sesama. Kasih Tuhan perlu menjadi tindakan yang dapat dirasakan orang lain.";
+  return `Ayat ini menjadi bagian penting dari pesan pasal. Bacalah bersama ayat sebelum dan sesudahnya agar tema “${theme.title}” dipahami secara utuh.`;
+}
+
+function originalLanguageItems() {
+  const text = selectedVerses.map(verse => verse.text.toLowerCase()).join(" ");
+  let matches = ORIGINAL_LANGUAGE_TERMS.filter(term => term.keys.some(key => text.includes(key))).slice(0, 4);
+  if (!matches.length) {
+    matches = [ORIGINAL_LANGUAGE_TERMS.find(term => term.keys.includes("firman"))];
+  }
+  const language = currentBook.testament === "PL" ? "Ibrani" : "Yunani";
+  return {
+    language,
+    items: matches.map(term => {
+      const data = currentBook.testament === "PL" ? term.he : term.gr;
+      return { word: data[0], transliteration: data[1], meaning: data[2] };
+    })
+  };
+}
+
+function sermonIllustration(theme) {
+  const title = theme.title.toLowerCase();
+  if (title.includes("iman") || title.includes("jangan takut")) return "Seseorang yang berjalan dalam kabut tidak dapat melihat seluruh jalan, tetapi ia masih dapat melangkah mengikuti tanda di depannya. Demikian juga iman: kita mungkin belum melihat seluruh jawaban, tetapi kita mengenal Tuhan yang memimpin.";
+  if (title.includes("kasih") || title.includes("memaafkan")) return "Luka yang terus digenggam seperti batu berat yang dibawa ke mana-mana. Ketika kita menyerahkannya kepada Tuhan dan memilih mengampuni, beban itu mulai dilepaskan dan hati memperoleh ruang untuk dipulihkan.";
+  if (title.includes("tekun") || title.includes("setia")) return "Benih tidak menjadi pohon dalam satu malam. Ia bertumbuh melalui proses yang tersembunyi. Demikian juga Tuhan sering membentuk iman kita melalui kesetiaan sehari-hari.";
+  if (title.includes("hikmat") || title.includes("firman")) return "Kompas tidak berjalan menggantikan kita, tetapi menunjukkan arah yang benar. Firman Tuhan juga tidak menghapus setiap perjalanan sulit, namun menuntun langkah kita supaya tidak kehilangan arah.";
+  if (title.includes("doa")) return "Seorang anak tidak ragu menceritakan kebutuhannya kepada ayah yang mengasihinya. Doa adalah keberanian datang kepada Bapa, bukan karena kita kuat, tetapi karena Dia baik.";
+  return "Sebuah lampu kecil tidak menerangi seluruh perjalanan sekaligus, tetapi cukup untuk langkah berikutnya. Firman Tuhan memberi terang yang kita perlukan untuk menaati-Nya hari ini.";
+}
+
+function sermonPacing(duration) {
+  if (duration === 15) return "Pendahuluan 2 menit • Tiga poin 10 menit • Penutup dan doa 3 menit";
+  if (duration === 45) return "Pendahuluan 7 menit • Tiga poin 30 menit • Aplikasi, ajakan, dan doa 8 menit";
+  return "Pendahuluan 5 menit • Tiga poin 20 menit • Aplikasi, ajakan, dan doa 5 menit";
+}
+
+function generateSermonDraft() {
+  if (!selectedVerses.length) return;
+  const theme = analyzeSelectedTheme();
+  const reference = selectedPassageReference();
+  const duration = Number(ui.sermonDuration.value);
+  const title = `${theme.title}: Firman yang Mengubah Kehidupan`;
+  const quotedVerses = selectedVerses.map(verse =>
+    `<blockquote><sup>${verse.number}</sup> ${escapeHTML(verse.text)}</blockquote>`
+  ).join("");
+  const explanations = selectedVerses.map(verse =>
+    `<li><strong>${escapeHTML(currentBook.name)} ${currentChapter}:${verse.number}</strong><p>${escapeHTML(explainSelectedVerse(verse, theme))}</p></li>`
+  ).join("");
+  const mainTruth = theme.message.split(".")[0] + ".";
+  let html = `
+    <section class="sermon-cover">
+      <p class="sermon-kicker">DRAF KHOTBAH • ${duration} MENIT</p>
+      <h1>${escapeHTML(title)}</h1>
+      <p><strong>Teks:</strong> ${escapeHTML(reference)}</p>
+      <p><strong>Tema:</strong> ${escapeHTML(theme.title)}</p>
+      <p><strong>Tujuan:</strong> Jemaat memahami kebenaran teks dan mengambil satu langkah nyata untuk melakukannya.</p>
+      <p class="sermon-pacing">${escapeHTML(sermonPacing(duration))}</p>
+    </section>
+    <section>
+      <h3>1. Pendahuluan</h3>
+      <p>Saudara-saudari yang dikasihi Tuhan, kita sering mengetahui banyak kebenaran, tetapi pergumulan sesungguhnya adalah membawa kebenaran itu masuk ke dalam kehidupan. Teks ${escapeHTML(reference)} mengajak kita berhenti, mendengar suara Tuhan, dan memberikan respons yang nyata.</p>
+      <p><strong>Pertanyaan pembuka:</strong> Apakah Firman Tuhan hanya kita dengar, atau sungguh-sungguh sedang mengubah cara kita hidup?</p>
+    </section>
+    <section>
+      <h3>2. Pembacaan Firman</h3>
+      ${quotedVerses}
+      <p class="sermon-transition">Kalimat transisi: “Mari kita melihat tiga kebenaran penting dari bagian Firman Tuhan ini.”</p>
+    </section>
+    <section>
+      <h3>3. Latar Belakang dan Konteks</h3>
+      <p>${escapeHTML(bookContext())}</p>
+      <p>Teks yang dipilih berada dalam ${escapeHTML(currentBook.name)} pasal ${currentChapter}. Untuk menjelaskan dengan bertanggung jawab, perhatikan alur pasal, ayat sebelum dan sesudahnya, siapa yang berbicara, kepada siapa pesan diberikan, serta masalah yang sedang dibahas.</p>
+    </section>`;
+
+  if (ui.includeExegesis.checked) {
+    html += `
+    <section>
+      <h3>4. Eksegese Ayat Pilihan</h3>
+      <p><strong>Pengamatan utama:</strong> Tema yang menonjol adalah “${escapeHTML(theme.title)}”. Jangan memisahkan ayat pilihan dari konteks pasalnya.</p>
+      <ol class="verse-explanations">${explanations}</ol>
+      <p><strong>Prinsip teologis:</strong> ${escapeHTML(mainTruth)}</p>
+    </section>`;
+  }
+
+  if (ui.includeOriginal.checked) {
+    const original = originalLanguageItems();
+    html += `
+    <section>
+      <h3>5. Kata Kunci Bahasa ${original.language}</h3>
+      <div class="original-word-grid">
+        ${original.items.map(item => `<article><strong>${item.word}</strong><em>${item.transliteration}</em><p>${escapeHTML(item.meaning)}</p></article>`).join("")}
+      </div>
+      <p class="language-note">Catatan: kata-kata ini berkaitan dengan tema teks. Periksa kembali bentuk kata, tata bahasa, dan konteksnya memakai leksikon atau komentar Alkitab sebelum menyatakan arti yang lebih khusus.</p>
+    </section>`;
+  }
+
+  html += `
+    <section>
+      <h3>6. Pokok Khotbah</h3>
+      <div class="sermon-point">
+        <span>01</span><div><h4>Kenali kebenaran yang Tuhan nyatakan</h4><p>${escapeHTML(mainTruth)} Sebelum memikirkan apa yang harus kita lakukan, lihatlah terlebih dahulu siapa Tuhan dan apa yang sedang dikerjakan-Nya dalam teks.</p><b>Kalimat penekanan: “Iman yang benar dimulai dari pengenalan yang benar kepada Tuhan.”</b></div>
+      </div>
+      <div class="sermon-point">
+        <span>02</span><div><h4>Berikan respons iman yang benar</h4><p>Firman Tuhan selalu mengundang respons. Respons itu dapat berupa percaya, bertobat, taat, mengampuni, melayani, atau tetap setia di tengah proses.</p><b>Kalimat penekanan: “Firman yang hanya didengar belum selesai; Firman perlu dijawab dengan ketaatan.”</b></div>
+      </div>
+      <div class="sermon-point">
+        <span>03</span><div><h4>Hidupi kebenaran dalam tindakan</h4><p>Mulailah dari satu tindakan yang jelas dan dapat dilakukan hari ini. Perubahan besar sering dimulai dari ketaatan kecil yang dilakukan terus-menerus.</p><b>Kalimat penekanan: “Kebenaran menjadi terlihat ketika diwujudkan dalam kehidupan.”</b></div>
+      </div>
+    </section>`;
+
+  if (ui.includeApplication.checked) {
+    html += `
+    <section>
+      <h3>7. Ilustrasi Khotbah</h3>
+      <p>${escapeHTML(sermonIllustration(theme))}</p>
+    </section>
+    <section>
+      <h3>8. Aplikasi Praktis</h3>
+      <ul>
+        <li><strong>Pribadi:</strong> Tanyakan bagian hidup mana yang perlu diserahkan atau ditaati berdasarkan teks ini.</li>
+        <li><strong>Keluarga dan gereja:</strong> Nyatakan kebenaran melalui perkataan yang membangun, pengampunan, pelayanan, dan kepedulian.</li>
+        <li><strong>Dunia digital:</strong> Gunakan media sosial dengan jujur, tidak merendahkan orang lain, dan membawa pesan yang memberi kehidupan.</li>
+      </ul>
+    </section>`;
+  }
+
+  html += `
+    <section>
+      <h3>9. Kesimpulan</h3>
+      <p>${escapeHTML(theme.message)} Tuhan tidak hanya ingin kita memahami Firman-Nya, tetapi juga hidup di dalamnya.</p>
+      <p><strong>Kalimat penutup:</strong> “Hari ini Tuhan mengundang kita bukan sekadar menjadi pendengar, melainkan pelaku Firman.”</p>
+    </section>
+    <section>
+      <h3>10. Ajakan Respons</h3>
+      <p>Mari periksa hati: adakah kebenaran yang sudah kita ketahui tetapi belum kita lakukan? Datanglah kepada Tuhan dengan jujur, mintalah pertolongan-Nya, dan ambillah satu komitmen nyata mulai hari ini.</p>
+    </section>
+    <section class="sermon-prayer">
+      <h3>Doa Penutup</h3>
+      <p>“Tuhan, terima kasih untuk Firman-Mu. Bukalah pikiran kami untuk mengerti, lembutkan hati kami untuk menerima, dan kuatkan kami untuk melakukannya. Tolong kami hidup dalam kebenaran, menjadi berkat bagi sesama, dan memuliakan nama-Mu. Di dalam nama Tuhan Yesus kami berdoa. Amin.”</p>
+    </section>`;
+
+  ui.sermonOutputTitle.textContent = title;
+  ui.sermonContent.innerHTML = html;
+  ui.sermonOutput.hidden = false;
+  ui.sermonOutput.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function copySermonDraft() {
+  if (ui.sermonOutput.hidden) return;
+  const text = `${ui.sermonOutputTitle.textContent}\n\n${ui.sermonContent.innerText}`;
+  await writeClipboard(text);
+  ui.copySermon.textContent = "✓ Bahan Khotbah Tersalin";
+  setTimeout(() => ui.copySermon.textContent = "📋 Salin Semua", 1800);
 }
 
 async function loadChapter({ scroll = true, direction = 0 } = {}) {
@@ -537,17 +797,22 @@ ui.quickChapter.addEventListener("change", () => {
 ui.verseSelect.addEventListener("change", jumpToVerse);
 ui.verses.addEventListener("click", event => {
   const verse = event.target.closest(".bible-verse");
-  if (verse) selectVerse(Number(verse.dataset.verse));
+  if (verse) selectVerse(Number(verse.dataset.verse), { toggle: true });
 });
 ui.verses.addEventListener("keydown", event => {
   const verse = event.target.closest(".bible-verse");
   if (verse && (event.key === "Enter" || event.key === " ")) {
     event.preventDefault();
-    selectVerse(Number(verse.dataset.verse));
+    selectVerse(Number(verse.dataset.verse), { toggle: true });
   }
 });
-ui.copyVerse.addEventListener("click", copySelectedVerse);
-ui.clearSelection.addEventListener("click", clearSelectedVerse);
+ui.copyVerse.addEventListener("click", copySelectedVerses);
+ui.clearSelection.addEventListener("click", clearSelectedVerses);
+ui.openSermon.addEventListener("click", () => {
+  ui.sermonStudio.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+ui.generateSermon.addEventListener("click", generateSermonDraft);
+ui.copySermon.addEventListener("click", copySermonDraft);
 [ui.previous, ui.previousBottom].forEach(button => button.addEventListener("click", () => moveChapter(-1)));
 [ui.next, ui.nextBottom].forEach(button => button.addEventListener("click", () => moveChapter(1)));
 ui.play.addEventListener("click", playAudio);
