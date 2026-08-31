@@ -241,7 +241,8 @@ function fillChapters() {
 
 function chapterUrl(book, chapter) {
   const folder = encodeURIComponent(book.folder).replace(/%2F/g, "/");
-  const filename = `${book.slug}-${String(chapter).padStart(2, "0")}.json`;
+  const chapterDigits = book.slug === "mazmur" ? 3 : 2;
+  const filename = `${book.slug}-${String(chapter).padStart(chapterDigits, "0")}.json`;
   return `${SOURCE_ROOT}/${folder}/json/${filename}`;
 }
 
