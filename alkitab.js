@@ -190,6 +190,89 @@ let audioSession = 0;
 let isSpeaking = false;
 let selectedVerses = [];
 
+const READER_PREFS_KEY = "erikson-reader-preferences-v1";
+const comfortUi = {
+  continueCard: document.querySelector("#continueReadingCard"),
+  continueReference: document.querySelector("#continueReadingReference"),
+  continueButton: document.querySelector("#continueReadingButton"),
+  search: document.querySelector("#chapterSearch"),
+  searchStatus: document.querySelector("#chapterSearchStatus"),
+  smaller: document.querySelector("#fontDecrease"),
+  larger: document.querySelector("#fontIncrease"),
+  theme: document.querySelector("#readerTheme"),
+  spacing: document.querySelector("#readerLineSpacing"),
+  focus: document.querySelector("#focusModeButton")
+};
+let readerPreferences = readReaderPreferences();
+let continueReadingTarget = null;
+
+function readReaderPreferences() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(READER_PREFS_KEY) || "{}");
+    return {
+      fontSize: Math.min(28, Math.max(16, Number(saved.fontSize) || 20)),
+      theme: ["light", "sepia", "night"].includes(saved.theme) ? saved.theme : "light",
+      spacing: ["compact", "comfortable", "relaxed"].includes(saved.spacing) ? saved.spacing : "comfortable",
+      focus: saved.focus === true
+    };
+  } catch (error) {
+    return { fontSize: 20, theme: "light", spacing: "comfortable", focus: false };
+  }
+}
+
+function saveReaderPreferences() {
+  localStorage.setItem(READER_PREFS_KEY, JSON.stringify(readerPreferences));
+}
+
+function applyReaderPreferences() {
+  const spacingMap = { compact: 1.55, comfortable: 1.85, relaxed: 2.15 };
+  document.documentElement.style.setProperty("--reader-font-size", readerPreferences.fontSize + "px");
+  document.documentElement.style.setProperty("--reader-line-height", spacingMap[readerPreferences.spacing]);
+  document.body.classList.toggle("reader-theme-sepia", readerPreferences.theme === "sepia");
+  document.body.classList.toggle("reader-theme-night", readerPreferences.theme === "night");
+  document.body.classList.toggle("reader-focus-mode", readerPreferences.focus);
+  comfortUi.theme.value = readerPreferences.theme;
+  comfortUi.spacing.value = readerPreferences.spacing;
+  comfortUi.focus.setAttribute("aria-pressed", String(readerPreferences.focus));
+  comfortUi.focus.textContent = readerPreferences.focus ? "✕ Keluar Fokus" : "⛶ Mode Fokus";
+}
+
+function refreshContinueReading() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem("erikson-last-reading") || "null"); } catch (error) { saved = null; }
+  const book = saved ? BOOKS.find(item => item.slug === saved.slug) : null;
+  const chapter = Number(saved?.chapter);
+  if (!book || !Number.isInteger(chapter) || chapter < 1 || chapter > book.chapters) {
+    comfortUi.continueCard.hidden = true;
+    continueReadingTarget = null;
+    return;
+  }
+  continueReadingTarget = { book, chapter };
+  comfortUi.continueReference.textContent = book.name + " " + chapter;
+  comfortUi.continueCard.hidden = false;
+}
+
+function applyChapterSearch({ scroll = false } = {}) {
+  const query = comfortUi.search.value.trim().toLowerCase().replace(/^ayat\\s+/, "");
+  const verses = Array.from(document.querySelectorAll(".bible-verse"));
+  verses.forEach(verse => verse.classList.remove("search-match", "search-dimmed"));
+  if (!query) {
+    comfortUi.searchStatus.textContent = "Ketik kata yang ingin dicari";
+    return;
+  }
+  const matches = verses.filter(verse => {
+    const number = verse.dataset.verse || "";
+    const text = verse.textContent.toLowerCase();
+    return text.includes(query) || number === query;
+  });
+  verses.forEach(verse => verse.classList.toggle("search-dimmed", !matches.includes(verse)));
+  matches.forEach(verse => verse.classList.add("search-match"));
+  comfortUi.searchStatus.textContent = matches.length
+    ? matches.length + " ayat ditemukan di " + currentBook.name + " " + currentChapter
+    : "Tidak ditemukan di pasal ini";
+  if (scroll && matches[0]) matches[0].scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
 function getInitialReading() {
   const params = new URLSearchParams(location.search);
   let saved = null;
@@ -640,7 +723,8 @@ async function copySermonDraft() {
 async function loadChapter({ scroll = true, direction = 0 } = {}) {
   stopAudio();
   ui.status.hidden = false;
-  ui.status.textContent = "Memuat ayat...";
+  ui.status.classList.add("reader-loading");
+  ui.status.innerHTML = '<span class="reader-spinner" aria-hidden="true"></span><strong>Memuat Firman Tuhan…</strong>';
   ui.verses.setAttribute("aria-busy", "true");
   ui.title.textContent = `${currentBook.name} ${currentChapter}`;
   ui.testamentLabel.textContent = currentBook.testament === "PL" ? "Perjanjian Lama" : "Perjanjian Baru";
@@ -657,9 +741,11 @@ async function loadChapter({ scroll = true, direction = 0 } = {}) {
     }
     renderVerses(data);
     renderSpiritualBlessing();
+    applyChapterSearch();
     animatePageTurn(direction);
     ui.status.hidden = true;
     localStorage.setItem("erikson-last-reading", JSON.stringify({ slug: currentBook.slug, chapter: currentChapter }));
+    refreshContinueReading();
     const params = new URLSearchParams({ kitab: currentBook.slug, pasal: String(currentChapter) });
     history.replaceState(null, "", `${location.pathname}?${params}`);
     document.title = `${currentBook.name} ${currentChapter} | Erikson Atelier`;
@@ -667,6 +753,7 @@ async function loadChapter({ scroll = true, direction = 0 } = {}) {
   } catch (error) {
     ui.verses.replaceChildren();
     ui.status.hidden = false;
+    ui.status.classList.remove("reader-loading");
     ui.status.innerHTML = "Ayat belum berhasil dimuat. Periksa internet, lalu <button type='button' id='retryReader'>coba lagi</button>.";
     document.querySelector("#retryReader")?.addEventListener("click", () => loadChapter({ scroll: false }));
   } finally {
@@ -842,12 +929,30 @@ ui.pause.addEventListener("click", pauseAudio);
 ui.stop.addEventListener("click", stopAudio);
 ui.quickPlay.addEventListener("click", () => isSpeaking ? stopAudio() : playAudio());
 ui.share.addEventListener("click", shareChapter);
+comfortUi.smaller.addEventListener("click", () => { readerPreferences.fontSize = Math.max(16, readerPreferences.fontSize - 1); applyReaderPreferences(); saveReaderPreferences(); });
+comfortUi.larger.addEventListener("click", () => { readerPreferences.fontSize = Math.min(28, readerPreferences.fontSize + 1); applyReaderPreferences(); saveReaderPreferences(); });
+comfortUi.theme.addEventListener("change", () => { readerPreferences.theme = comfortUi.theme.value; applyReaderPreferences(); saveReaderPreferences(); });
+comfortUi.spacing.addEventListener("change", () => { readerPreferences.spacing = comfortUi.spacing.value; applyReaderPreferences(); saveReaderPreferences(); });
+comfortUi.focus.addEventListener("click", () => { readerPreferences.focus = !readerPreferences.focus; applyReaderPreferences(); saveReaderPreferences(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+comfortUi.search.addEventListener("input", () => applyChapterSearch());
+comfortUi.search.addEventListener("search", () => applyChapterSearch());
+comfortUi.search.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); applyChapterSearch({ scroll: true }); } });
+comfortUi.continueButton.addEventListener("click", () => {
+  if (!continueReadingTarget) return;
+  currentBook = continueReadingTarget.book;
+  currentChapter = continueReadingTarget.chapter;
+  ui.testament.value = "all";
+  fillBooks();
+  loadChapter();
+});
 addEventListener("beforeunload", () => window.speechSynthesis?.cancel());
 
 const initial = getInitialReading();
 currentBook = initial.book;
 currentChapter = initial.chapter;
 ui.testament.value = "all";
+applyReaderPreferences();
+refreshContinueReading();
 fillBooks();
 loadChapter({ scroll: false });
 
