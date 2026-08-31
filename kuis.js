@@ -308,6 +308,10 @@ function nextQuestion(){if(answered>=questionCount()){finish();return}current+=1
 async function finish(){
   els.game.hidden=true;els.result.hidden=false;els.resultStage.textContent=(quizMode==="sunday"?"SEKOLAH MINGGU · ":"")+"TAHAP "+selectedStage+" SELESAI";
   els.finalScore.textContent=String(score());els.resultPlayer.textContent=playerName;els.correctTotal.textContent=correct+"/"+questionCount();
+  localStorage.setItem("erikson-last-certificate",JSON.stringify({
+    playerName:playerName,stage:selectedStage,score:score(),correct:correct,total:questionCount(),
+    mode:quizMode==="sunday"?"Sekolah Minggu":"Kuis Alkitab Umum",completedAt:new Date().toISOString()
+  }));
   if(score()>=9){els.resultTitle.textContent="Luar biasa!";els.resultMessage.textContent="Pemahamanmu sangat baik. Teruslah membaca dan melakukan Firman Tuhan."}
   else if(score()>=7){els.resultTitle.textContent="Bagus! Terus bertumbuh.";els.resultMessage.textContent="Pelajari kembali ayat pada jawaban yang belum tepat."}
   else{els.resultTitle.textContent="Tetap semangat belajar.";els.resultMessage.textContent="Nilai ini menjadi awal untuk mengenal Firman Tuhan lebih dalam."}
