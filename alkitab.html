@@ -44,6 +44,21 @@
       <a href="favorit.html"><span>⭐</span><strong>Ayat Favorit</strong><small id="favoriteShortcutCount">Belum ada ayat tersimpan</small></a>
     </nav>
 
+    <section class="continue-reading-card" id="continueReadingCard" hidden aria-live="polite">
+      <div class="continue-reading-icon" aria-hidden="true">📖</div>
+      <div><small>LANJUTKAN BACAAN TERAKHIR</small><strong id="continueReadingReference">—</strong><span>Kembali tepat ke pasal terakhir yang Anda baca.</span></div>
+      <button id="continueReadingButton" type="button">Lanjut membaca →</button>
+    </section>
+
+    <section class="reader-comfort-bar" aria-label="Pengaturan kenyamanan membaca">
+      <div class="comfort-title"><span aria-hidden="true">Aa</span><div><strong>Nyaman Dibaca</strong><small>Atur tampilan sesuai kebutuhan</small></div></div>
+      <label class="chapter-search" for="chapterSearch"><span>Cari di pasal ini</span><input id="chapterSearch" type="search" placeholder="Contoh: kasih, iman, ayat 3"><small id="chapterSearchStatus" aria-live="polite">Ketik kata yang ingin dicari</small></label>
+      <div class="font-size-controls" aria-label="Ukuran tulisan"><button id="fontDecrease" type="button" aria-label="Kecilkan tulisan">A−</button><button id="fontIncrease" type="button" aria-label="Besarkan tulisan">A+</button></div>
+      <label class="compact-setting" for="readerTheme"><span>Tema</span><select id="readerTheme"><option value="light">Terang</option><option value="sepia">Krem</option><option value="night">Malam</option></select></label>
+      <label class="compact-setting" for="readerLineSpacing"><span>Jarak</span><select id="readerLineSpacing"><option value="compact">Rapat</option><option value="comfortable" selected>Nyaman</option><option value="relaxed">Lega</option></select></label>
+      <button id="focusModeButton" class="focus-mode-button" type="button" aria-pressed="false">⛶ Mode Fokus</button>
+    </section>
+
     <section class="reader-layout" aria-label="Pembaca Alkitab">
       <aside class="reader-controls top-reader-controls">
         <div class="reader-field">
@@ -135,7 +150,7 @@
         </aside>
 
         <div class="book-page-content" id="bookPage">
-          <p id="readerStatus" class="reader-status" aria-live="polite">Memuat ayat...</p>
+          <p id="readerStatus" class="reader-status reader-loading" aria-live="polite"><span class="reader-spinner" aria-hidden="true"></span><strong>Memuat Firman Tuhan…</strong></p>
           <div id="verseList" class="verse-list"></div>
         </div>
         <div class="bottom-chapter-nav">
@@ -252,6 +267,14 @@
       <p>Teks menggunakan <a href="https://www.openbible.uk/id-ID/" target="_blank" rel="noreferrer">Alkitab Open Translation Bahasa Indonesia</a>, tersedia di bawah lisensi <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>. Teks tidak diubah; tanda format sumber hanya disederhanakan untuk tampilan pembaca. Fitur suara menggunakan suara bawaan HP atau laptop Anda.</p>
     </section>
   </main>
+
+  <nav class="mobile-bible-nav" aria-label="Menu utama HP">
+    <a href="index.html"><span aria-hidden="true">⌂</span><small>Beranda</small></a>
+    <a href="alkitab.html" aria-current="page"><span aria-hidden="true">📖</span><small>Alkitab</small></a>
+    <a href="kuis.html"><span aria-hidden="true">?</span><small>Kuis</small></a>
+    <a href="renungan.html"><span aria-hidden="true">✦</span><small>Renungan</small></a>
+    <a href="favorit.html"><span aria-hidden="true">♡</span><small>Favorit</small></a>
+  </nav>
 
   <footer class="footer shell"><p>© 2026 Erikson Giawa</p><p>Erikson Atelier — ruang kreatif untuk karya dan Firman.</p><a class="footer-privacy" href="privacy.html">Kebijakan Privasi</a></footer>
   <script src="alkitab.js" defer></script>
