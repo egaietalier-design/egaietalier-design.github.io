@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Mainkan Kuis Alkitab Erikson Atelier. Pilih bebas Tahap 1 sampai 10 dan dapatkan nilai langsung.">
-  <title>Kuis Alkitab Tahap 1–10 – Erikson Atelier</title>
+  <meta name="description" content="Mainkan 100 tahap Kuis Alkitab Erikson Atelier: pilihan ganda, tebak tokoh, benar atau salah, esai, dan mode khusus Sekolah Minggu.">
+  <title>Kuis Alkitab 100 Tahap – Erikson Atelier</title>
   <link rel="canonical" href="https://egaietalier-design.github.io/kuis.html">
   <meta name="robots" content="index, follow">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4678537472039301" crossorigin="anonymous"></script>
@@ -26,8 +26,8 @@
       <div class="level-hero">
         <div>
           <p class="eyebrow">Belajar sambil bermain</p>
-          <h1>Pilih Tahap<br><em>Kuis Alkitab</em></h1>
-          <p>Masukkan nama panggilan, kemudian pilih tahap mana saja. Kamu tidak wajib memulai dari Tahap 1.</p>
+          <h1>100 Tahap<br><em>Kuis Alkitab</em></h1>
+          <p>Masukkan nama panggilan, pilih mode, lalu mainkan tahap mana saja. Soal dimulai dari mudah dan semakin menantang.</p>
         </div>
         <div class="level-score-rule"><strong>10</strong><span>Nilai maksimal<br>setiap tahap</span></div>
       </div>
@@ -40,24 +40,25 @@
         <small class="quiz-consent">Gunakan nama panggilan, bukan nama lengkap atau informasi pribadi.</small>
       </section>
 
+      <section class="quiz-mode-panel" aria-labelledby="mode-heading">
+        <div><span class="player-number">02</span><div><strong id="mode-heading">Pilih jenis permainan</strong><small>Mode Sekolah Minggu memakai bahasa yang lebih sederhana dan ceria.</small></div></div>
+        <div class="quiz-mode-picker" role="group" aria-label="Jenis kuis">
+          <button class="quiz-mode active" type="button" data-mode="general">📖 Kuis Alkitab Umum</button>
+          <button class="quiz-mode sunday-mode" type="button" data-mode="sunday">🌈 Khusus Sekolah Minggu</button>
+        </div>
+        <p id="mode-description" class="mode-description">Perjalanan lengkap dari dasar hingga eksegese dan penerapan.</p>
+      </section>
+
       <section class="stage-selector" aria-labelledby="stage-heading">
-        <div class="stage-selector-heading"><div><span class="player-number">02</span><div><strong id="stage-heading">Pilih petualanganmu</strong><small>Setiap tahap membawa kamu menjelajahi bagian berbeda dari Alkitab.</small></div></div><p><b>Tahap 1–5</b>: 5 soal · <b>Tahap 6–10</b>: 10 soal</p></div>
+        <div class="stage-selector-heading"><div><span class="player-number">03</span><div><strong id="stage-heading">Pilih petualanganmu</strong><small>Pilih bebas Tahap 1 sampai 100. Kamu tidak harus mulai dari awal.</small></div></div><p><b>Tahap 1–5</b>: 5 soal · <b>Tahap 6–100</b>: 10 soal</p></div>
         <figure class="stage-journey">
           <img src="assets/quiz-stage-journey.svg" alt="Ilustrasi perjalanan Alkitab dari Penciptaan sampai Wahyu" width="1600" height="620">
           <figcaption class="quiz-invitation"><strong>Main Kuis Yuk!</strong></figcaption>
         </figure>
-        <div class="stage-card-grid">
-          <button type="button" class="stage-card" data-stage="1"><span class="stage-card-icon" aria-hidden="true">🌍</span><span class="stage-number">01</span><div><strong>Penciptaan</strong><small>Tahap 1 · 5 soal · Dasar</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card" data-stage="2"><span class="stage-card-icon" aria-hidden="true">⛺</span><span class="stage-number">02</span><div><strong>Tokoh Iman</strong><small>Tahap 2 · 5 soal · Dasar</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card" data-stage="3"><span class="stage-card-icon" aria-hidden="true">🌊</span><span class="stage-number">03</span><div><strong>Keluaran</strong><small>Tahap 3 · 5 soal · Bertumbuh</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card" data-stage="4"><span class="stage-card-icon" aria-hidden="true">👑</span><span class="stage-number">04</span><div><strong>Raja-Raja</strong><small>Tahap 4 · 5 soal · Bertumbuh</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card" data-stage="5"><span class="stage-card-icon" aria-hidden="true">📜</span><span class="stage-number">05</span><div><strong>Para Nabi</strong><small>Tahap 5 · 5 soal · Menengah</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card advanced" data-stage="6"><span class="stage-card-icon" aria-hidden="true">⭐</span><span class="stage-number">06</span><div><strong>Kelahiran Yesus</strong><small>Tahap 6 · 10 soal · Menengah</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card advanced" data-stage="7"><span class="stage-card-icon" aria-hidden="true">🕊️</span><span class="stage-number">07</span><div><strong>Pelayanan Yesus</strong><small>Tahap 7 · 10 soal · Menantang</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card advanced" data-stage="8"><span class="stage-card-icon" aria-hidden="true">✝️</span><span class="stage-number">08</span><div><strong>Salib &amp; Kebangkitan</strong><small>Tahap 8 · 10 soal · Menantang</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card advanced" data-stage="9"><span class="stage-card-icon" aria-hidden="true">🔥</span><span class="stage-number">09</span><div><strong>Gereja Mula-Mula</strong><small>Tahap 9 · 10 soal · Mahir</small></div><i>Mulai →</i></button>
-          <button type="button" class="stage-card advanced final-level" data-stage="10"><span class="stage-card-icon" aria-hidden="true">✨</span><span class="stage-number">10</span><div><strong>Wahyu</strong><small>Tahap 10 · 10 soal · Puncak</small></div><i>Mulai →</i></button>
-        </div>
+        <div class="stage-range-tabs" id="stage-range-tabs" role="group" aria-label="Kelompok tahap"></div>
+        <div class="stage-level-note" id="stage-level-note"></div>
+        <div class="stage-card-grid" id="stage-card-grid"></div>
+        <p class="stage-selection-help">💡 Setiap tahap berisi campuran pilihan ganda, tebak tokoh, benar atau salah, dan esai.</p>
       </section>
     </section>
 
@@ -68,7 +69,7 @@
         <div class="quiz-progress" role="progressbar" aria-label="Kemajuan kuis" aria-valuemin="0" aria-valuemax="5" aria-valuenow="1"><span id="progress-bar"></span></div>
       </div>
       <article class="question-card">
-        <div class="question-stage-label"><span id="question-number">01</span><p class="question-category" id="question-category">Alkitab</p></div>
+        <div class="question-stage-label"><span id="question-number">01</span><div><p class="question-type" id="question-type">Pilihan Ganda</p><p class="question-category" id="question-category">Alkitab</p></div></div>
         <h2 id="question-text">Pertanyaan akan tampil di sini.</h2>
         <div class="answer-grid" id="answer-options"></div>
         <div class="answer-explanation stage-feedback" id="answer-explanation" hidden>
