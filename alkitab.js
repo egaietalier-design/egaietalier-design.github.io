@@ -828,3 +828,240 @@ currentChapter = initial.chapter;
 ui.testament.value = "all";
 fillBooks();
 loadChapter({ scroll: false });
+
+
+/* Rencana Baca, Ayat Favorit, dan Catatan Pribadi */
+const PERSONAL_KEYS = {
+  plan: "erikson-reading-plan-v1",
+  favorites: "erikson-favorite-verses-v1"
+};
+const JESUS_7 = [
+  ["Yohanes","yohanes",1],["Yohanes","yohanes",3],["Markus","markus",4],["Lukas","lukas",15],
+  ["Yohanes","yohanes",10],["Yohanes","yohanes",19],["Yohanes","yohanes",20]
+];
+const FAITH_30 = [
+  ["Kejadian","kejadian",1],["Kejadian","kejadian",12],["Keluaran","keluaran",3],["Keluaran","keluaran",20],
+  ["Yosua","yosua",1],["1 Samuel","1-samuel",17],["Mazmur","mazmur",23],["Mazmur","mazmur",51],
+  ["Amsal","amsal",3],["Yesaya","yesaya",53],["Daniel","daniel",6],["Matius","matius",5],
+  ["Matius","matius",6],["Lukas","lukas",2],["Lukas","lukas",10],["Lukas","lukas",15],
+  ["Yohanes","yohanes",1],["Yohanes","yohanes",3],["Yohanes","yohanes",10],["Yohanes","yohanes",15],
+  ["Yohanes","yohanes",19],["Yohanes","yohanes",20],["Kisah Para Rasul","kisah-para-rasul",2],["Roma","roma",8],
+  ["Roma","roma",12],["1 Korintus","1-korintus",13],["Galatia","galatia",5],["Efesus","efesus",6],
+  ["Filipi","filipi",4],["Wahyu","wahyu",21]
+];
+const PLAN_DEFS = {
+  jesus7:{title:"7 Hari Mengenal Yesus",days:7,subtitle:"Mengenal pribadi, kasih, salib, dan kebangkitan Yesus."},
+  faith30:{title:"30 Hari Dasar Iman",days:30,subtitle:"Bagian-bagian penting untuk membangun dasar kehidupan Kristen."},
+  nt90:{title:"90 Hari Perjanjian Baru",days:90,subtitle:"Membaca seluruh Perjanjian Baru secara bertahap."},
+  bible365:{title:"365 Hari Seluruh Alkitab",days:365,subtitle:"Perjalanan dari Kejadian sampai Wahyu."}
+};
+const toolEls = {
+  saveFavorite:document.querySelector("#saveFavoriteVerse"),
+  shortcutCount:document.querySelector("#favoriteShortcutCount"),
+  planChoices:document.querySelector("#planChoiceGrid"),
+  activePlan:document.querySelector("#activePlanCard"),
+  planLabel:document.querySelector("#activePlanLabel"),
+  planTitle:document.querySelector("#activePlanTitle"),
+  planPercent:document.querySelector("#planProgressPercent"),
+  planBar:document.querySelector("#planProgressBar"),
+  todayLabel:document.querySelector("#todayDayLabel"),
+  todayReference:document.querySelector("#todayReadingReference"),
+  todayEncouragement:document.querySelector("#todayReadingEncouragement"),
+  openToday:document.querySelector("#openTodayReading"),
+  completeToday:document.querySelector("#completeTodayReading"),
+  dayList:document.querySelector("#planDayList"),
+  changePlan:document.querySelector("#changeReadingPlan"),
+  favoriteSearch:document.querySelector("#favoriteSearch"),
+  favoriteCount:document.querySelector("#favoriteCount"),
+  favoriteList:document.querySelector("#favoriteList")
+};
+let activeReadingPlan = readStoredJSON(PERSONAL_KEYS.plan, null);
+let favoriteVerses = readStoredJSON(PERSONAL_KEYS.favorites, []);
+if(!Array.isArray(favoriteVerses))favoriteVerses=[];
+if(activeReadingPlan&&(!activeReadingPlan.id||!Array.isArray(activeReadingPlan.completed)))activeReadingPlan=null;
+let visiblePlanDay = 1;
+
+function readStoredJSON(key,fallback){
+  try{
+    const value=JSON.parse(localStorage.getItem(key));
+    return value===null?fallback:value;
+  }catch(error){return fallback}
+}
+function localDateKey(date=new Date()){
+  return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
+}
+function chapterSequence(testament){
+  const list=[];
+  BOOKS.filter(book=>!testament||book.testament===testament).forEach(book=>{
+    for(let chapter=1;chapter<=book.chapters;chapter++)list.push({name:book.name,slug:book.slug,chapter});
+  });
+  return list;
+}
+function splitSequence(sequence,days){
+  return Array.from({length:days},(_,index)=>{
+    const start=Math.floor(index*sequence.length/days);
+    let end=Math.floor((index+1)*sequence.length/days);
+    if(end<=start)end=start+1;
+    return sequence.slice(start,Math.min(end,sequence.length));
+  });
+}
+function planDays(planId){
+  if(planId==="jesus7")return JESUS_7.map(item=>[{name:item[0],slug:item[1],chapter:item[2]}]);
+  if(planId==="faith30")return FAITH_30.map(item=>[{name:item[0],slug:item[1],chapter:item[2]}]);
+  if(planId==="nt90")return splitSequence(chapterSequence("PB"),90);
+  return splitSequence(chapterSequence(),365);
+}
+function formatReading(items){
+  const groups=[];
+  items.forEach(item=>{
+    const last=groups.at(-1);
+    if(last&&last.slug===item.slug&&last.end+1===item.chapter)last.end=item.chapter;
+    else groups.push({name:item.name,slug:item.slug,start:item.chapter,end:item.chapter});
+  });
+  return groups.map(group=>group.name+" "+group.start+(group.end>group.start?"–"+group.end:"")).join(" · ");
+}
+function currentPlanDay(){
+  if(!activeReadingPlan)return 1;
+  const start=new Date(activeReadingPlan.startedAt+"T00:00:00");
+  const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const difference=Math.floor((today-start)/86400000)+1;
+  return Math.max(1,Math.min(PLAN_DEFS[activeReadingPlan.id].days,difference));
+}
+function persistPlan(){
+  localStorage.setItem(PERSONAL_KEYS.plan,JSON.stringify(activeReadingPlan));
+  renderReadingPlan();
+}
+function startReadingPlan(planId){
+  activeReadingPlan={id:planId,startedAt:localDateKey(),completed:[]};
+  visiblePlanDay=1;persistPlan();
+  window.eriksonTrackActivity?.("reading_plan_start",PLAN_DEFS[planId].title,"plan:"+planId);
+}
+function togglePlanDay(day){
+  const completed=new Set(activeReadingPlan.completed||[]);
+  if(completed.has(day))completed.delete(day);else completed.add(day);
+  activeReadingPlan.completed=Array.from(completed).sort((a,b)=>a-b);
+  persistPlan();
+}
+function renderReadingPlan(){
+  if(!activeReadingPlan||!PLAN_DEFS[activeReadingPlan.id]){
+    toolEls.planChoices.hidden=false;toolEls.activePlan.hidden=true;return;
+  }
+  const definition=PLAN_DEFS[activeReadingPlan.id];
+  const days=planDays(activeReadingPlan.id);
+  visiblePlanDay=currentPlanDay();
+  const completed=new Set(activeReadingPlan.completed||[]);
+  const percent=Math.round(completed.size/definition.days*100);
+  toolEls.planChoices.hidden=true;toolEls.activePlan.hidden=false;
+  toolEls.planLabel.textContent="RENCANA AKTIF · DIMULAI "+new Date(activeReadingPlan.startedAt+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"});
+  toolEls.planTitle.textContent=definition.title;toolEls.planPercent.textContent=percent+"%";toolEls.planBar.style.width=percent+"%";
+  toolEls.todayLabel.textContent="HARI "+visiblePlanDay+" DARI "+definition.days;
+  toolEls.todayReference.textContent=formatReading(days[visiblePlanDay-1]);
+  toolEls.todayEncouragement.textContent=definition.subtitle;
+  const isDone=completed.has(visiblePlanDay);
+  toolEls.completeToday.textContent=isDone?"✓ Sudah Selesai":"✓ Tandai Selesai";
+  toolEls.completeToday.classList.toggle("completed",isDone);
+  renderPlanDayList(days,completed,visiblePlanDay);
+}
+function renderPlanDayList(days,completed,today){
+  toolEls.dayList.innerHTML="";
+  const start=Math.max(1,Math.min(days.length-6,today-2));
+  const end=Math.min(days.length,start+6);
+  for(let day=start;day<=end;day++){
+    const button=document.createElement("button");
+    button.type="button";button.className="plan-day"+(completed.has(day)?" done":"")+(day===today?" current":"");
+    button.innerHTML="<span>"+(completed.has(day)?"✓":String(day).padStart(2,"0"))+"</span><div><strong>Hari "+day+"</strong><small>"+escapeHTML(formatReading(days[day-1]))+"</small></div>";
+    button.addEventListener("click",()=>togglePlanDay(day));
+    toolEls.dayList.appendChild(button);
+  }
+}
+async function openReadingItem(item,verseNumbers=[]){
+  const targetBook=BOOKS.find(book=>book.slug===item.slug);
+  if(!targetBook)return;
+  currentBook=targetBook;currentChapter=item.chapter;ui.testament.value="all";
+  fillBooks();fillChapters();await loadChapter({scroll:false});
+  if(verseNumbers.length){
+    selectedVerses=currentVerses.filter(verse=>verseNumbers.includes(verse.number));
+    updateSelectionUI();
+  }
+  document.querySelector("#bookReader").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function openPlanDay(day){
+  const days=planDays(activeReadingPlan.id);
+  const first=days[day-1]?.[0];
+  if(first)openReadingItem(first);
+}
+function persistFavorites(){
+  localStorage.setItem(PERSONAL_KEYS.favorites,JSON.stringify(favoriteVerses));
+  renderFavorites();
+}
+function favoriteKey(){
+  return currentBook.slug+"-"+currentChapter+"-"+selectedVerses.map(verse=>verse.number).join("-");
+}
+function saveFavoriteSelection(){
+  if(!selectedVerses.length)return;
+  const key=favoriteKey();
+  const existing=favoriteVerses.find(item=>item.key===key);
+  if(existing){
+    toolEls.saveFavorite.textContent="⭐ Sudah Tersimpan";
+    setTimeout(()=>toolEls.saveFavorite.textContent="⭐ Simpan Favorit",1600);
+    document.querySelector("#favoriteVerses").scrollIntoView({behavior:"smooth",block:"start"});
+    return;
+  }
+  favoriteVerses.unshift({
+    id:crypto.randomUUID?crypto.randomUUID():"fav-"+Date.now(),key,
+    book:currentBook.name,slug:currentBook.slug,chapter:currentChapter,
+    reference:selectedPassageReference(),verses:selectedVerses.map(verse=>({number:verse.number,text:verse.text})),
+    note:"",savedAt:new Date().toISOString()
+  });
+  persistFavorites();
+  toolEls.saveFavorite.textContent="✓ Favorit Tersimpan";
+  setTimeout(()=>toolEls.saveFavorite.textContent="⭐ Simpan Favorit",1600);
+  window.eriksonTrackActivity?.("favorite_verse_save",selectedPassageReference(),"favorite:"+key);
+}
+function renderFavorites(){
+  const query=(toolEls.favoriteSearch.value||"").trim().toLowerCase();
+  const filtered=favoriteVerses.filter(item=>(item.reference+" "+item.verses.map(verse=>verse.text).join(" ")+" "+item.note).toLowerCase().includes(query));
+  const countText=favoriteVerses.length+(favoriteVerses.length===1?" ayat tersimpan":" ayat tersimpan");
+  toolEls.favoriteCount.textContent=countText;
+  toolEls.shortcutCount.textContent=favoriteVerses.length?countText:"Belum ada ayat tersimpan";
+  toolEls.favoriteList.innerHTML="";
+  if(!filtered.length){
+    toolEls.favoriteList.innerHTML='<div class="favorite-empty"><span>☆</span><strong>'+(query?"Ayat tidak ditemukan":"Belum ada ayat favorit")+'</strong><p>'+(query?"Coba gunakan kata pencarian lain.":"Pilih ayat di atas untuk membuat koleksi pribadimu.")+"</p></div>";
+    return;
+  }
+  filtered.forEach(item=>{
+    const card=document.createElement("article");card.className="favorite-card";
+    card.innerHTML='<div class="favorite-card-top"><div><small>AYAT FAVORIT</small><h4>'+escapeHTML(item.reference)+'</h4></div><button type="button" class="favorite-delete" aria-label="Hapus '+escapeHTML(item.reference)+'">×</button></div><blockquote>'+item.verses.map(verse=>"<sup>"+verse.number+"</sup> "+escapeHTML(verse.text)).join(" ")+'</blockquote><label>Catatan pribadi<textarea maxlength="500" rows="3" placeholder="Tuliskan pelajaran, doa, atau penerapan…">'+escapeHTML(item.note||"")+'</textarea></label><div class="favorite-actions"><button type="button" data-action="open">📖 Buka</button><button type="button" data-action="copy">📋 Salin</button><button type="button" data-action="note">💾 Simpan Catatan</button></div>';
+    card.querySelector(".favorite-delete").addEventListener("click",()=>{
+      if(confirm("Hapus "+item.reference+" dari ayat favorit?")){
+        favoriteVerses=favoriteVerses.filter(favorite=>favorite.id!==item.id);persistFavorites();
+      }
+    });
+    card.querySelector('[data-action="open"]').addEventListener("click",()=>openReadingItem(item,item.verses.map(verse=>verse.number)));
+    card.querySelector('[data-action="copy"]').addEventListener("click",async event=>{
+      await writeClipboard(item.reference+"\n"+item.verses.map(verse=>verse.number+". "+verse.text).join("\n")+(item.note?"\n\nCatatan: "+item.note:""));
+      event.currentTarget.textContent="✓ Tersalin";setTimeout(()=>event.currentTarget.textContent="📋 Salin",1400);
+    });
+    card.querySelector('[data-action="note"]').addEventListener("click",event=>{
+      item.note=card.querySelector("textarea").value.trim().slice(0,500);
+      localStorage.setItem(PERSONAL_KEYS.favorites,JSON.stringify(favoriteVerses));
+      event.currentTarget.textContent="✓ Catatan Tersimpan";setTimeout(()=>event.currentTarget.textContent="💾 Simpan Catatan",1400);
+    });
+    toolEls.favoriteList.appendChild(card);
+  });
+}
+
+toolEls.planChoices.addEventListener("click",event=>{
+  const button=event.target.closest("[data-plan]");
+  if(button)startReadingPlan(button.dataset.plan);
+});
+toolEls.openToday.addEventListener("click",()=>openPlanDay(visiblePlanDay));
+toolEls.completeToday.addEventListener("click",()=>togglePlanDay(visiblePlanDay));
+toolEls.changePlan.addEventListener("click",()=>{
+  if(confirm("Ganti rencana baca? Progres rencana yang sedang aktif akan dimulai ulang.")){
+    activeReadingPlan=null;localStorage.removeItem(PERSONAL_KEYS.plan);renderReadingPlan();
+  }
+});
+toolEls.saveFavorite.addEventListener("click",saveFavoriteSelection);
+toolEls.favoriteSearch.addEventListener("input",renderFavorites);
+renderReadingPlan();renderFavorites();
