@@ -1,1 +1,32 @@
-{"name":"Erikson Bible Studio","short_name":"Erikson Bible","description":"Alkitab, renungan, kuis, doa, dan pelayanan bersama Erikson Giawa.","start_url":"./","scope":"./","display":"standalone","background_color":"#fffdf8","theme_color":"#0b3562","lang":"id-ID","icons":[{"src":"assets/app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "id": "./",
+  "name": "Erikson Bible Studio",
+  "short_name": "Bible Studio",
+  "description": "Alkitab, renungan, kuis, doa, dan pelayanan bersama Erikson Giawa.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07111f",
+  "theme_color": "#0b3562",
+  "lang": "id-ID",
+  "categories": [
+    "education",
+    "books",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "assets/bible-studio-icon-v2.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/bible-studio-icon-v2.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
