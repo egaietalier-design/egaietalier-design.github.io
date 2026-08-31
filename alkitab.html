@@ -35,6 +35,11 @@
       </div>
     </section>
 
+    <nav class="reader-feature-links" aria-label="Fitur pembelajaran pribadi">
+      <a href="#readingPlan"><span>🗓️</span><strong>Rencana Baca</strong><small>7, 30, 90, atau 365 hari</small></a>
+      <a href="#favoriteVerses"><span>⭐</span><strong>Ayat Favorit</strong><small id="favoriteShortcutCount">Belum ada ayat tersimpan</small></a>
+    </nav>
+
     <section class="reader-layout" aria-label="Pembaca Alkitab">
       <aside class="reader-controls top-reader-controls">
         <div class="reader-field">
@@ -110,6 +115,7 @@
           <div><span>Ayat dipilih</span><strong id="selectedVerseReference">—</strong></div>
           <p id="selectedVersePreview"></p>
           <button id="copyVerseButton" type="button">📋 Salin Ayat</button>
+          <button id="saveFavoriteVerse" class="save-favorite-button" type="button">⭐ Simpan Favorit</button>
           <button id="openSermonStudio" class="open-sermon-button" type="button">🎙️ Buat Khotbah</button>
           <button id="clearVerseSelection" type="button" aria-label="Batalkan pilihan ayat">×</button>
         </div>
@@ -134,6 +140,66 @@
           <button id="nextChapterBottom" type="button">Pasal berikutnya →</button>
         </div>
       </article>
+    </section>
+
+    <section class="bible-personal-tools" aria-labelledby="personalToolsTitle">
+      <div class="personal-tools-heading">
+        <div>
+          <p class="eyebrow">Perjalanan Iman Pribadi</p>
+          <h2 id="personalToolsTitle">Baca dengan teratur, simpan yang menyentuh hati.</h2>
+        </div>
+        <p>Progres, ayat favorit, dan catatan tersimpan secara pribadi di perangkat ini.</p>
+      </div>
+
+      <div class="personal-tools-grid">
+        <article class="reading-plan-panel" id="readingPlan">
+          <div class="tool-card-heading">
+            <span aria-hidden="true">🗓️</span>
+            <div><small>RENCANA BACA ALKITAB</small><h3>Bangun kebiasaan membaca Firman</h3></div>
+          </div>
+          <div class="plan-choice-grid" id="planChoiceGrid">
+            <button type="button" data-plan="jesus7"><strong>7 Hari</strong><span>Mengenal Yesus</span><small>Ringan · pemula</small></button>
+            <button type="button" data-plan="faith30"><strong>30 Hari</strong><span>Dasar Iman</span><small>1 pasal pilihan/hari</small></button>
+            <button type="button" data-plan="nt90"><strong>90 Hari</strong><span>Perjanjian Baru</span><small>±3 pasal/hari</small></button>
+            <button type="button" data-plan="bible365"><strong>365 Hari</strong><span>Seluruh Alkitab</span><small>±3–4 pasal/hari</small></button>
+          </div>
+          <div class="active-plan-card" id="activePlanCard" hidden>
+            <div class="plan-progress-top">
+              <div><small id="activePlanLabel">RENCANA AKTIF</small><h3 id="activePlanTitle">Rencana Baca</h3></div>
+              <strong id="planProgressPercent">0%</strong>
+            </div>
+            <div class="plan-progress-track"><span id="planProgressBar"></span></div>
+            <div class="today-reading">
+              <small id="todayDayLabel">BACAAN HARI INI</small>
+              <h4 id="todayReadingReference">—</h4>
+              <p id="todayReadingEncouragement">Luangkan waktu untuk membaca dan merenungkan Firman.</p>
+              <div>
+                <button id="openTodayReading" class="plan-open-button" type="button">📖 Buka Bacaan</button>
+                <button id="completeTodayReading" class="plan-complete-button" type="button">✓ Tandai Selesai</button>
+              </div>
+            </div>
+            <div class="plan-day-list" id="planDayList"></div>
+            <button id="changeReadingPlan" class="change-plan-button" type="button">Ganti rencana baca</button>
+          </div>
+          <p class="tool-storage-note">Progres tersimpan pada perangkat ini dan tidak terlihat oleh pengunjung lain.</p>
+        </article>
+
+        <article class="favorite-panel" id="favoriteVerses">
+          <div class="tool-card-heading">
+            <span aria-hidden="true">⭐</span>
+            <div><small>AYAT FAVORIT & CATATAN</small><h3>Simpan ayat untuk direnungkan kembali</h3></div>
+          </div>
+          <p class="favorite-help">Klik satu atau beberapa ayat pada buku Alkitab, lalu tekan <strong>⭐ Simpan Favorit</strong>.</p>
+          <div class="favorite-toolbar">
+            <label for="favoriteSearch">Cari ayat tersimpan</label>
+            <input id="favoriteSearch" type="search" placeholder="Cari kitab, ayat, atau catatan…">
+            <span id="favoriteCount">0 ayat tersimpan</span>
+          </div>
+          <div class="favorite-list" id="favoriteList">
+            <div class="favorite-empty"><span>☆</span><strong>Belum ada ayat favorit</strong><p>Pilih ayat di atas untuk membuat koleksi pribadimu.</p></div>
+          </div>
+        </article>
+      </div>
     </section>
 
     <section class="sermon-studio" id="sermonStudio" aria-labelledby="sermonStudioTitle">
