@@ -324,10 +324,19 @@ function renderVerses(data) {
     paragraph.title = "Klik untuk memilih dan menyalin ayat";
     const number = document.createElement("sup");
     number.textContent = verse.number;
-    paragraph.append(number, document.createTextNode(verse.text));
+    const heart = document.createElement("span");
+    heart.className = "verse-heart";
+    heart.dataset.favoriteVerse = String(verse.number);
+    heart.setAttribute("role", "button");
+    heart.setAttribute("tabindex", "0");
+    heart.setAttribute("aria-label", `Simpan ${currentBook.name} ${currentChapter} ayat ${verse.number} ke favorit`);
+    heart.title = "Tambah ke ayat favorit";
+    heart.textContent = "♡";
+    paragraph.append(number, document.createTextNode(verse.text), heart);
     fragment.append(paragraph);
   });
   ui.verses.replaceChildren(fragment);
+  updateVerseHeartStates();
   clearSelectedVerses();
   ui.verseSelect.replaceChildren(...currentVerses.map(verse => {
     const option = document.createElement("option");
@@ -796,10 +805,22 @@ ui.quickChapter.addEventListener("change", () => {
 });
 ui.verseSelect.addEventListener("change", jumpToVerse);
 ui.verses.addEventListener("click", event => {
+  const heart = event.target.closest(".verse-heart");
+  if (heart) {
+    event.stopPropagation();
+    toggleSingleVerseFavorite(Number(heart.dataset.favoriteVerse));
+    return;
+  }
   const verse = event.target.closest(".bible-verse");
   if (verse) selectVerse(Number(verse.dataset.verse), { toggle: true });
 });
 ui.verses.addEventListener("keydown", event => {
+  const heart = event.target.closest(".verse-heart");
+  if (heart && (event.key === "Enter" || event.key === " ")) {
+    event.preventDefault();event.stopPropagation();
+    toggleSingleVerseFavorite(Number(heart.dataset.favoriteVerse));
+    return;
+  }
   const verse = event.target.closest(".bible-verse");
   if (verse && (event.key === "Enter" || event.key === " ")) {
     event.preventDefault();
@@ -992,7 +1013,39 @@ function openPlanDay(day){
 }
 function persistFavorites(){
   localStorage.setItem(PERSONAL_KEYS.favorites,JSON.stringify(favoriteVerses));
-  renderFavorites();
+  renderFavorites();updateVerseHeartStates();
+}
+function singleFavoriteKey(verseNumber){
+  return currentBook.slug+"-"+currentChapter+"-"+verseNumber;
+}
+function updateVerseHeartStates(){
+  if(typeof favoriteVerses==="undefined")return;
+  document.querySelectorAll(".verse-heart").forEach(heart=>{
+    const number=Number(heart.dataset.favoriteVerse);
+    const saved=favoriteVerses.some(item=>item.key===singleFavoriteKey(number));
+    heart.classList.toggle("saved",saved);
+    heart.textContent=saved?"♥":"♡";
+    heart.setAttribute("aria-pressed",String(saved));
+    heart.title=saved?"Hapus dari favorit":"Tambah ke ayat favorit";
+  });
+}
+function toggleSingleVerseFavorite(verseNumber){
+  const verse=currentVerses.find(item=>item.number===verseNumber);
+  if(!verse)return;
+  const key=singleFavoriteKey(verseNumber);
+  const existing=favoriteVerses.find(item=>item.key===key);
+  if(existing){
+    favoriteVerses=favoriteVerses.filter(item=>item.id!==existing.id);
+  }else{
+    favoriteVerses.unshift({
+      id:crypto.randomUUID?crypto.randomUUID():"fav-"+Date.now(),key,
+      book:currentBook.name,slug:currentBook.slug,chapter:currentChapter,
+      reference:currentBook.name+" "+currentChapter+":"+verse.number,
+      verses:[{number:verse.number,text:verse.text}],note:"",savedAt:new Date().toISOString()
+    });
+    window.eriksonTrackActivity?.("favorite_verse_save",currentBook.name+" "+currentChapter+":"+verse.number,"favorite:"+key);
+  }
+  persistFavorites();
 }
 function favoriteKey(){
   return currentBook.slug+"-"+currentChapter+"-"+selectedVerses.map(verse=>verse.number).join("-");
