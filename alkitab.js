@@ -521,12 +521,54 @@ function renderVerses(data) {
   }));
 }
 
+let pageAudioContext = null;
+
+function playPageTurnSound(direction = 1) {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  try {
+    pageAudioContext ||= new AudioContextClass();
+    if (pageAudioContext.state === "suspended") pageAudioContext.resume();
+    const context = pageAudioContext;
+    const now = context.currentTime;
+    const duration = 0.58;
+    const buffer = context.createBuffer(1, Math.floor(context.sampleRate * duration), context.sampleRate);
+    const samples = buffer.getChannelData(0);
+
+    for (let index = 0; index < samples.length; index += 1) {
+      const progress = index / samples.length;
+      const sweep = Math.sin(Math.PI * progress);
+      const crackle = Math.random() > 0.986 ? (Math.random() * 2 - 1) * 1.8 : 0;
+      samples[index] = ((Math.random() * 2 - 1) * 0.48 + crackle) * sweep;
+    }
+
+    const source = context.createBufferSource();
+    const paperFilter = context.createBiquadFilter();
+    const gain = context.createGain();
+    source.buffer = buffer;
+    source.playbackRate.value = direction > 0 ? 1.04 : 0.94;
+    paperFilter.type = "bandpass";
+    paperFilter.frequency.setValueAtTime(direction > 0 ? 1450 : 1180, now);
+    paperFilter.frequency.exponentialRampToValueAtTime(direction > 0 ? 650 : 820, now + duration);
+    paperFilter.Q.value = 0.55;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.19, now + 0.055);
+    gain.gain.exponentialRampToValueAtTime(0.075, now + 0.31);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    source.connect(paperFilter).connect(gain).connect(context.destination);
+    source.start(now);
+    source.stop(now + duration);
+  } catch {
+    // Pembaca tetap berganti pasal jika perangkat tidak mendukung suara Web Audio.
+  }
+}
+
 function animatePageTurn(direction = 0) {
   const animation = direction > 0 ? "turning-next" : direction < 0 ? "turning-previous" : "book-opening";
   ui.card.classList.remove("turning-next", "turning-previous", "book-opening");
   void ui.card.offsetWidth;
   ui.card.classList.add(animation);
-  setTimeout(() => ui.card.classList.remove(animation), 760);
+  setTimeout(() => ui.card.classList.remove(animation), 1120);
 }
 
 function groupVerseNumbers(numbers) {
@@ -872,6 +914,7 @@ function moveChapter(direction) {
   ui.book.value = currentBook.slug;
   fillChapters();
   ui.chapter.value = String(currentChapter);
+  playPageTurnSound(direction);
   loadChapter({ direction });
 }
 
@@ -1062,7 +1105,7 @@ function changeChapterBySwipe(direction) {
   if (direction < 0 && ui.previous.disabled) return;
   swipeLocked = true;
   moveChapter(direction);
-  setTimeout(() => { swipeLocked = false; }, 900);
+  setTimeout(() => { swipeLocked = false; }, 1220);
 }
 
 swipePage?.addEventListener("touchstart", event => {
