@@ -140,7 +140,7 @@ let selectedStage=1,currentRange=0,quizMode="general",questions=[],current=0,cor
 let responseLog=[];
 
 function questionCount(){return selectedStage<=5?5:10}
-function score(){return Math.round((correct/questionCount())*10)}
+function score(){return Math.round((correct/questionCount())*100)}
 function makeSession(){return crypto.randomUUID?crypto.randomUUID():"quiz-"+Date.now()+"-"+Math.random().toString(36).slice(2)}
 function levelFor(stage){return LEVELS.find(function(level){return stage>=level.from&&stage<=level.to})||LEVELS[0]}
 function typeLabel(type){return {multiple:"Pilihan Ganda",truefalse:"Benar atau Salah",guess:"Tebak Tokoh",essay:"Esai"}[type]||"Kuis"}
@@ -252,7 +252,7 @@ function renderQuestion(){
   locked=false;
   const q=questions[current];
   els.count.textContent="Soal "+(current+1)+" dari "+questionCount();
-  els.score.textContent="Nilai: "+score()+"/10";
+  els.score.textContent="Nilai: "+score()+"/100";
   els.progress.style.width=((current+1)/questionCount()*100)+"%";
   els.progressBox.setAttribute("aria-valuemax",String(questionCount()));els.progressBox.setAttribute("aria-valuenow",String(current+1));
   els.number.textContent=String(current+1).padStart(2,"0");els.type.textContent=typeLabel(q.type);els.category.textContent=q.category;els.question.textContent=q.question;
@@ -278,10 +278,10 @@ function renderEssay(q){
 function showFeedback(isCorrect,q,responseText){
   answered+=1;if(isCorrect)correct+=1;
   responseLog.push({number:current+1,type:q.type,answer:String(responseText).slice(0,500),correct:isCorrect});
-  els.stagePoints.textContent=score()+"/10";els.stagePoints.className=isCorrect?"earned":"missed";
+  els.stagePoints.textContent=score()+"/100";els.stagePoints.className=isCorrect?"earned":"missed";
   els.status.textContent=isCorrect?(q.type==="essay"?"Gagasan utamamu sesuai!":"Benar!"):(q.type==="essay"?"Jawabanmu belum memuat gagasan utama.":"Belum tepat.");
   els.status.className=isCorrect?"status-correct":"status-wrong";els.detail.textContent=q.explanation;els.reference.textContent=q.reference;
-  els.explanation.hidden=false;els.score.textContent="Nilai: "+score()+"/10";
+  els.explanation.hidden=false;els.score.textContent="Nilai: "+score()+"/100";
   els.next.textContent=answered>=questionCount()?"Lihat Nilai Tahap →":"Soal berikutnya →";els.next.hidden=false;
   saveProgress(String(responseText).slice(0,500));
 }
@@ -312,8 +312,8 @@ async function finish(){
     playerName:playerName,stage:selectedStage,score:score(),correct:correct,total:questionCount(),
     mode:quizMode==="sunday"?"Sekolah Minggu":"Kuis Alkitab Umum",completedAt:new Date().toISOString()
   }));
-  if(score()>=9){els.resultTitle.textContent="Luar biasa!";els.resultMessage.textContent="Pemahamanmu sangat baik. Teruslah membaca dan melakukan Firman Tuhan."}
-  else if(score()>=7){els.resultTitle.textContent="Bagus! Terus bertumbuh.";els.resultMessage.textContent="Pelajari kembali ayat pada jawaban yang belum tepat."}
+  if(score()>=90){els.resultTitle.textContent="Luar biasa!";els.resultMessage.textContent="Pemahamanmu sangat baik. Teruslah membaca dan melakukan Firman Tuhan."}
+  else if(score()>=70){els.resultTitle.textContent="Bagus! Terus bertumbuh.";els.resultMessage.textContent="Pelajari kembali ayat pada jawaban yang belum tepat."}
   else{els.resultTitle.textContent="Tetap semangat belajar.";els.resultMessage.textContent="Nilai ini menjadi awal untuk mengenal Firman Tuhan lebih dalam."}
   els.saveStatus.textContent="Menyimpan…";els.saveStatus.textContent=await saveProgress()?"Tersimpan":"Belum tersimpan";
   window.scrollTo({top:els.result.offsetTop-20,behavior:"smooth"});
