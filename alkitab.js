@@ -522,44 +522,51 @@ function renderVerses(data) {
 }
 
 let pageAudioContext = null;
+let pageTurnBuffer = null;
+
+function preparePageTurnAudio() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  pageAudioContext ||= new AudioContextClass();
+  if (pageAudioContext.state === "suspended") pageAudioContext.resume();
+  if (pageTurnBuffer) return pageAudioContext;
+
+  const duration = 0.46;
+  pageTurnBuffer = pageAudioContext.createBuffer(
+    1,
+    Math.floor(pageAudioContext.sampleRate * duration),
+    pageAudioContext.sampleRate
+  );
+  const samples = pageTurnBuffer.getChannelData(0);
+  for (let index = 0; index < samples.length; index += 1) {
+    const progress = index / samples.length;
+    const envelope = Math.sin(Math.PI * progress);
+    const crackle = Math.random() > 0.989 ? (Math.random() * 2 - 1) * 1.5 : 0;
+    samples[index] = ((Math.random() * 2 - 1) * 0.43 + crackle) * envelope;
+  }
+  return pageAudioContext;
+}
 
 function playPageTurnSound(direction = 1) {
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
   try {
-    pageAudioContext ||= new AudioContextClass();
-    if (pageAudioContext.state === "suspended") pageAudioContext.resume();
-    const context = pageAudioContext;
+    const context = preparePageTurnAudio();
+    if (!context || !pageTurnBuffer) return;
     const now = context.currentTime;
-    const duration = 0.58;
-    const buffer = context.createBuffer(1, Math.floor(context.sampleRate * duration), context.sampleRate);
-    const samples = buffer.getChannelData(0);
-
-    for (let index = 0; index < samples.length; index += 1) {
-      const progress = index / samples.length;
-      const sweep = Math.sin(Math.PI * progress);
-      const crackle = Math.random() > 0.986 ? (Math.random() * 2 - 1) * 1.8 : 0;
-      samples[index] = ((Math.random() * 2 - 1) * 0.48 + crackle) * sweep;
-    }
-
     const source = context.createBufferSource();
     const paperFilter = context.createBiquadFilter();
     const gain = context.createGain();
-    source.buffer = buffer;
-    source.playbackRate.value = direction > 0 ? 1.04 : 0.94;
+    source.buffer = pageTurnBuffer;
+    source.playbackRate.value = direction > 0 ? 1.06 : 0.96;
     paperFilter.type = "bandpass";
-    paperFilter.frequency.setValueAtTime(direction > 0 ? 1450 : 1180, now);
-    paperFilter.frequency.exponentialRampToValueAtTime(direction > 0 ? 650 : 820, now + duration);
-    paperFilter.Q.value = 0.55;
+    paperFilter.frequency.value = direction > 0 ? 1320 : 1120;
+    paperFilter.Q.value = 0.48;
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.19, now + 0.055);
-    gain.gain.exponentialRampToValueAtTime(0.075, now + 0.31);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.045);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.46);
     source.connect(paperFilter).connect(gain).connect(context.destination);
     source.start(now);
-    source.stop(now + duration);
   } catch {
-    // Pembaca tetap berganti pasal jika perangkat tidak mendukung suara Web Audio.
+    // Pergantian pasal tetap berjalan jika suara tidak didukung.
   }
 }
 
@@ -568,7 +575,7 @@ function animatePageTurn(direction = 0) {
   ui.card.classList.remove("turning-next", "turning-previous", "book-opening");
   void ui.card.offsetWidth;
   ui.card.classList.add(animation);
-  setTimeout(() => ui.card.classList.remove(animation), 1120);
+  setTimeout(() => ui.card.classList.remove(animation), 780);
 }
 
 function groupVerseNumbers(numbers) {
@@ -853,7 +860,7 @@ async function copySermonDraft() {
   setTimeout(() => ui.copySermon.textContent = "📋 Salin Semua", 1800);
 }
 
-async function loadChapter({ scroll = true, direction = 0 } = {}) {
+async function loadChapter({ scroll = true, direction = 0, animate = true } = {}) {
   stopAudio();
   ui.status.hidden = true;
   ui.status.classList.remove("reader-loading");
@@ -881,7 +888,7 @@ async function loadChapter({ scroll = true, direction = 0 } = {}) {
     }
     renderSpiritualBlessing();
     applyChapterSearch();
-    animatePageTurn(direction);
+    if (animate) animatePageTurn(direction);
     ui.status.hidden = true;
     localStorage.setItem("erikson-last-reading", JSON.stringify({ slug: currentBook.slug, chapter: currentChapter }));
     refreshContinueReading();
@@ -915,7 +922,8 @@ function moveChapter(direction) {
   fillChapters();
   ui.chapter.value = String(currentChapter);
   playPageTurnSound(direction);
-  loadChapter({ direction });
+  animatePageTurn(direction);
+  loadChapter({ direction, animate: false });
 }
 
 function clearSpeakingVerse() {
@@ -1105,10 +1113,11 @@ function changeChapterBySwipe(direction) {
   if (direction < 0 && ui.previous.disabled) return;
   swipeLocked = true;
   moveChapter(direction);
-  setTimeout(() => { swipeLocked = false; }, 1220);
+  setTimeout(() => { swipeLocked = false; }, 840);
 }
 
 swipePage?.addEventListener("touchstart", event => {
+  preparePageTurnAudio();
   const touch = event.changedTouches[0];
   swipeStartX = touch.clientX;
   swipeStartY = touch.clientY;
