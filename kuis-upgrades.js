@@ -14,7 +14,7 @@
   ];
   const question=document.querySelector("#question-text"),number=document.querySelector("#question-number"),stageText=document.querySelector("#active-stage");
   function varyQuestion(){
-    if(!question||!question.textContent||question.dataset.varied==="yes")return;
+    if(!question||!question.textContent||/\\(Tahap \\d+ · Soal \\d+\\)$/.test(question.textContent))return;
     const stageMatch=(stageText?.textContent||"").match(/Tahap\s+(\d+)/i),stage=stageMatch?Number(stageMatch[1]):1;
     const qNumber=Number(number?.textContent||1);
     const original=question.textContent.replace(/^.+?—\s*/,"").replace(/\s*\(Tahap \d+ · Soal \d+\)$/,"");
@@ -22,7 +22,7 @@
     question.dataset.varied="yes";
   }
   if(question){
-    new MutationObserver(()=>{if(question.dataset.varied!=="yes")varyQuestion()}).observe(question,{childList:true,characterData:true,subtree:true});
+    new MutationObserver(varyQuestion).observe(question,{childList:true,characterData:true,subtree:true});
     const originalSetter=Object.getOwnPropertyDescriptor(Node.prototype,"textContent");
     if(originalSetter)varyQuestion();
   }
