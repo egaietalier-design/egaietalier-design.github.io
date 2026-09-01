@@ -449,3 +449,20 @@
   0%,45%{opacity:.62;transform:translate3d(-10px,0,0)}
   100%{opacity:1;transform:translate3d(0,0,0)}
 }
+
+
+/* Mode baca cepat: tetap bergaya buku tanpa animasi dan suara */
+.page-turn-sheet{display:none!important}
+.book-reader,
+.book-reader.turning-next,
+.book-reader.turning-previous,
+.book-reader.book-opening,
+.book-reader.turning-next .book-page-content,
+.book-reader.turning-previous .book-page-content,
+.book-reader.book-opening .book-page-content{
+  animation:none!important;
+  transform:none!important;
+  transition:none!important;
+}
+.book-reader.turning-next:after,
+.book-reader.turning-previous:after{display:none!important}
