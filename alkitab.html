@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b3562">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="alkitab.css?v=12">
+  <link rel="stylesheet" href="alkitab.css?v=13">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4678537472039301" crossorigin="anonymous"></script>  <link rel="icon" type="image/png" sizes="1254x1254" href="assets/bible-studio-icon-v2.png">
   <link rel="apple-touch-icon" href="assets/bible-studio-icon-v2.png">
 </head>
@@ -100,6 +100,11 @@
             </select>
           </label>
           <p id="audioStatus" class="audio-status" aria-live="polite">Siap dibacakan.</p>
+        </div>
+
+        <div class="offline-bible-panel">
+          <button id="saveBookOffline" type="button">⬇ Simpan Kitab untuk Offline</button>
+          <p id="offlineBibleStatus" aria-live="polite">Pasal yang sudah dibuka disimpan otomatis untuk dibaca tanpa internet.</p>
         </div>
 
         <p class="reader-tip">Panel ini berada di atas agar Alkitab dapat dibaca dengan layar penuh. Pilihan terakhir tersimpan otomatis.</p>
@@ -279,7 +284,7 @@
   </nav>
 
   <footer class="footer shell"><p>© 2026 Erikson Giawa</p><p>Erikson Atelier — ruang kreatif untuk karya dan Firman.</p><a class="footer-privacy" href="privacy.html">Kebijakan Privasi</a></footer>
-  <script src="alkitab.js?v=12" defer></script>
+  <script src="alkitab.js?v=13" defer></script>
   <script src="activity.js" defer></script>
   <script src="pwa.js?v=11" defer></script></body>
 </html>
