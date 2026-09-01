@@ -1,5 +1,5 @@
 (() => {
-  const ICON = "assets/bible-studio-icon-v2.png";
+  const ICON = "assets/bible-studio-icon-512.png";
   const DISMISS_KEY = "erikson-install-dismissed-until";
   let promptEvent = null;
 
@@ -107,13 +107,26 @@
       help.textContent = promptEvent
         ? "Tekan Instal Sekarang untuk memasang aplikasi dengan ikon Bible Studio yang baru."
         : copy.text;
-      confirm.textContent = promptEvent ? "Instal Sekarang" : "Saya Mengerti";
+      const manualOnly = /iphone|ipad|ipod|firefox/i.test(navigator.userAgent);
+      confirm.textContent = promptEvent ? "Instal Sekarang" : (manualOnly ? "Saya Mengerti" : "Siapkan Instalasi");
       overlay.hidden = false;
     }
 
     async function install() {
       if (!promptEvent) {
-        overlay.hidden = true;
+        const manualOnly = /iphone|ipad|ipod|firefox/i.test(navigator.userAgent);
+        if (manualOnly) {
+          overlay.hidden = true;
+          return;
+        }
+        confirm.disabled = true;
+        confirm.textContent = "Menyiapkan...";
+        try {
+          if ("serviceWorker" in navigator) await navigator.serviceWorker.ready;
+        } catch (_) {}
+        const url = new URL(window.location.href);
+        url.searchParams.set("install", "1");
+        window.location.replace(url.toString());
         return;
       }
       const event = promptEvent;
