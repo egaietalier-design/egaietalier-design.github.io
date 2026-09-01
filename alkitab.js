@@ -570,12 +570,8 @@ function playPageTurnSound(direction = 1) {
   }
 }
 
-function animatePageTurn(direction = 0) {
-  const animation = direction > 0 ? "turning-next" : direction < 0 ? "turning-previous" : "book-opening";
+function animatePageTurn() {
   ui.card.classList.remove("turning-next", "turning-previous", "book-opening");
-  void ui.card.offsetWidth;
-  ui.card.classList.add(animation);
-  setTimeout(() => ui.card.classList.remove(animation), 780);
 }
 
 function groupVerseNumbers(numbers) {
@@ -921,8 +917,6 @@ function moveChapter(direction) {
   ui.book.value = currentBook.slug;
   fillChapters();
   ui.chapter.value = String(currentChapter);
-  playPageTurnSound(direction);
-  animatePageTurn(direction);
   loadChapter({ direction, animate: false });
 }
 
@@ -1113,11 +1107,10 @@ function changeChapterBySwipe(direction) {
   if (direction < 0 && ui.previous.disabled) return;
   swipeLocked = true;
   moveChapter(direction);
-  setTimeout(() => { swipeLocked = false; }, 840);
+  setTimeout(() => { swipeLocked = false; }, 180);
 }
 
 swipePage?.addEventListener("touchstart", event => {
-  preparePageTurnAudio();
   const touch = event.changedTouches[0];
   swipeStartX = touch.clientX;
   swipeStartY = touch.clientY;
