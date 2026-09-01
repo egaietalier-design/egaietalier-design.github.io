@@ -1,7 +1,14 @@
 (() => {
   const ICON = "assets/bible-studio-icon-512.png";
   const DISMISS_KEY = "erikson-install-dismissed-until";
-  let promptEvent = null;\n  const standaloneLaunch = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;\n  const homePath = location.pathname === "/" || location.pathname.endsWith("/index.html");\n  if (standaloneLaunch && homePath) {\n    location.replace("alkitab.html?source=pwa");\n    return;\n  }\n
+  let promptEvent = null;
+  const standaloneLaunch = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  const homePath = location.pathname === "/" || location.pathname.endsWith("/index.html");
+  if (standaloneLaunch && homePath) {
+    location.replace("alkitab.html?source=pwa");
+    return;
+  }
+
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));
   }
