@@ -3,7 +3,7 @@
   "name": "Erikson Bible Studio",
   "short_name": "Bible Studio",
   "description": "Alkitab, renungan, kuis, doa, dan pelayanan bersama Erikson Giawa.",
-  "start_url": "./?source=pwa",
+  "start_url": "./alkitab.html?source=pwa",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
