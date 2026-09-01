@@ -108,7 +108,7 @@
         ? "Tekan Instal Sekarang untuk memasang aplikasi dengan ikon Bible Studio yang baru."
         : copy.text;
       const manualOnly = /iphone|ipad|ipod|firefox/i.test(navigator.userAgent);
-      confirm.textContent = promptEvent ? "Instal Sekarang" : (manualOnly ? "Saya Mengerti" : "Siapkan Instalasi");
+      confirm.textContent = promptEvent ? "Instal Sekarang" : (manualOnly ? "Saya Mengerti" : "Salin Link untuk Chrome/Edge");
       overlay.hidden = false;
     }
 
@@ -119,14 +119,14 @@
           overlay.hidden = true;
           return;
         }
-        confirm.disabled = true;
-        confirm.textContent = "Menyiapkan...";
         try {
-          if ("serviceWorker" in navigator) await navigator.serviceWorker.ready;
-        } catch (_) {}
-        const url = new URL(window.location.href);
-        url.searchParams.set("install", "1");
-        window.location.replace(url.toString());
+          await navigator.clipboard.writeText("https://egaietalier-design.github.io/");
+          confirm.textContent = "Link Sudah Disalin ✓";
+          help.textContent = "Sekarang buka Google Chrome atau Microsoft Edge, tempel link di kolom alamat, lalu tekan ikon instal di sebelah kanan kolom alamat.";
+        } catch (_) {
+          help.textContent = "Salin link https://egaietalier-design.github.io/ lalu buka langsung di Google Chrome atau Microsoft Edge. Setelah itu tekan ikon instal di sebelah kanan kolom alamat.";
+          confirm.textContent = "Saya Mengerti";
+        }
         return;
       }
       const event = promptEvent;
