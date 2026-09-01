@@ -192,3 +192,36 @@
 @media(max-width:980px){.reader-comfort-bar{grid-template-columns:auto minmax(170px,1fr) auto auto}.comfort-title{grid-column:1}.chapter-search{grid-column:2}.font-size-controls{grid-column:3}.focus-mode-button{grid-column:4}.compact-setting{grid-row:2}.compact-setting:nth-of-type(2){grid-column:2}.compact-setting:nth-of-type(3){grid-column:3}}
 @media(max-width:760px){.bible-reader-body{padding-bottom:76px}.reader-comfort-bar{top:0;grid-template-columns:1fr auto auto;border-radius:14px;padding:9px}.comfort-title{grid-column:1}.comfort-title small{display:none}.chapter-search{grid-column:1/-1;grid-row:2}.font-size-controls{grid-column:2}.focus-mode-button{grid-column:3;overflow:hidden;width:43px;padding:0;font-size:0}.focus-mode-button:before{content:"⛶";font-size:17px}.compact-setting{grid-row:3}.compact-setting:nth-of-type(2){grid-column:1}.compact-setting:nth-of-type(3){grid-column:2}.continue-reading-card{grid-template-columns:auto 1fr}.continue-reading-card button{grid-column:1/-1;width:100%}.mobile-bible-nav{position:fixed;right:10px;bottom:9px;left:10px;z-index:60;display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden;border:1px solid rgba(19,94,167,.18);border-radius:18px;padding:6px;background:rgba(255,255,255,.96);box-shadow:0 16px 40px rgba(11,53,98,.2);backdrop-filter:blur(14px)}.mobile-bible-nav a{display:flex;min-height:50px;align-items:center;justify-content:center;flex-direction:column;gap:2px;border-radius:12px;color:#597083;text-decoration:none}.mobile-bible-nav a[aria-current=page]{background:#eaf3f9;color:#0b568c}.mobile-bible-nav span{font-size:18px}.mobile-bible-nav small{font-size:8px;font-weight:900}.reader-theme-night .mobile-bible-nav{border-color:#35536a;background:rgba(14,32,47,.97)}.reader-theme-night .mobile-bible-nav a{color:#a9bdcb}.reader-theme-night .mobile-bible-nav a[aria-current=page]{background:#21425a;color:#fff}}
 @media(max-width:480px){.reader-comfort-bar{margin-inline:-5px}.comfort-title>span{width:35px;height:35px}.comfort-title strong{font-size:12px}.font-size-controls button{width:35px}.chapter-search input{height:37px}.continue-reading-card{margin-top:0}}
+
+
+/* Pembaca satu halaman penuh */
+.reader-layout{grid-template-columns:minmax(0,1fr)}
+.book-reader{
+  background:
+    linear-gradient(90deg,rgba(100,65,25,.07),transparent 5%,transparent 95%,rgba(100,65,25,.07)),
+    repeating-linear-gradient(0deg,rgba(110,75,38,.018) 0,rgba(110,75,38,.018) 1px,transparent 1px,transparent 4px),
+    #fffdf5;
+}
+.book-spine{display:none}
+.verse-list{
+  column-count:1;
+  column-gap:0;
+  column-rule:none;
+  width:100%;
+  max-width:100%;
+  margin-inline:auto;
+}
+.book-page-content{touch-action:pan-y;overscroll-behavior-x:contain}
+.page-instruction{display:flex;align-items:center;justify-content:center;gap:7px}
+.page-instruction:before{content:"☜"}
+.page-instruction:after{content:"☞"}
+.reader-theme-night .book-reader{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.035),transparent 5%,transparent 95%,rgba(255,255,255,.035)),
+    #142635;
+}
+@media(max-width:760px){
+  .scripture-card.book-reader{width:calc(100% + 12px);margin-inline:-6px;padding:22px 14px}
+  .verse-list{padding:24px 0}
+  .bible-verse{font-size:18px;line-height:1.8;text-align:left}
+}
