@@ -4,7 +4,8 @@
   let promptEvent = null;
   const standaloneLaunch = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
   const homePath = location.pathname === "/" || location.pathname.endsWith("/index.html");
-  if (standaloneLaunch && homePath) {
+  const isInitialAppLaunch = new URLSearchParams(location.search).get("source") === "pwa";
+  if (standaloneLaunch && homePath && isInitialAppLaunch) {
     location.replace("alkitab.html?source=pwa");
     return;
   }
