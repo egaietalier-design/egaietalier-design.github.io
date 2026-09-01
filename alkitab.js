@@ -20,6 +20,7 @@ const BOOKS = [
 
 const SOURCE_ROOT = "https://raw.githubusercontent.com/OpenTranslationBible/open-bible/main/lang/id-ID";
 const cache = new Map();
+const OFFLINE_BIBLE_CACHE = "erikson-bible-chapters-v1";
 
 const SPIRITUAL_THEMES = [
   {
@@ -167,6 +168,7 @@ const ui = {
   pause: document.querySelector("#pauseAudio"), stop: document.querySelector("#stopAudio"),
   speed: document.querySelector("#audioSpeed"), audioStatus: document.querySelector("#audioStatus"),
   share: document.querySelector("#shareChapter"), card: document.querySelector("#bookReader"),
+  offlineButton: document.querySelector("#saveBookOffline"), offlineStatus: document.querySelector("#offlineBibleStatus"),
   quickBook: document.querySelector("#quickBookSelect"), quickChapter: document.querySelector("#quickChapterSelect"),
   verseSelect: document.querySelector("#verseSelect"), quickPlay: document.querySelector("#quickPlayAudio"),
   selectionBar: document.querySelector("#verseSelectionBar"), selectedRef: document.querySelector("#selectedVerseReference"),
@@ -327,6 +329,95 @@ function chapterUrl(book, chapter) {
   const chapterDigits = book.slug === "mazmur" ? 3 : 2;
   const filename = `${book.slug}-${String(chapter).padStart(chapterDigits, "0")}.json`;
   return `${SOURCE_ROOT}/${folder}/json/${filename}`;
+}
+
+async function readOfflineChapter(url) {
+  if (!("caches" in window)) return null;
+  try {
+    const store = await caches.open(OFFLINE_BIBLE_CACHE);
+    const response = await store.match(url);
+    return response ? await response.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function saveOfflineResponse(url, response) {
+  if (!("caches" in window)) return false;
+  try {
+    const store = await caches.open(OFFLINE_BIBLE_CACHE);
+    await store.put(url, response);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function getChapterData(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const copy = response.clone();
+    const data = await response.json();
+    await saveOfflineResponse(url, copy);
+    return { data, fromOffline: false };
+  } catch (networkError) {
+    const data = await readOfflineChapter(url);
+    if (!data) throw networkError;
+    return { data, fromOffline: true };
+  }
+}
+
+async function saveCurrentBookOffline() {
+  if (!ui.offlineButton || !ui.offlineStatus) return;
+  if (!("caches" in window)) {
+    ui.offlineStatus.textContent = "Penyimpanan offline belum didukung oleh browser ini.";
+    return;
+  }
+  if (!navigator.onLine) {
+    ui.offlineStatus.textContent = "Sambungkan internet terlebih dahulu untuk menyimpan satu kitab.";
+    return;
+  }
+
+  const bookToSave = currentBook;
+  const total = bookToSave.chapters;
+  let nextChapter = 1;
+  let completed = 0;
+  let saved = 0;
+  let failed = 0;
+  ui.offlineButton.disabled = true;
+  ui.offlineButton.textContent = "Menyimpan…";
+  ui.offlineStatus.textContent = `Menyiapkan ${bookToSave.name} untuk dibaca offline…`;
+
+  async function worker() {
+    while (nextChapter <= total) {
+      const chapter = nextChapter++;
+      const url = chapterUrl(bookToSave, chapter);
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const stored = await saveOfflineResponse(url, response.clone());
+        if (!stored) throw new Error("Gagal menyimpan");
+        saved += 1;
+      } catch {
+        failed += 1;
+      }
+      completed += 1;
+      ui.offlineStatus.textContent = `Menyimpan ${bookToSave.name}: ${completed} dari ${total} pasal…`;
+    }
+  }
+
+  try {
+    await Promise.all([worker(), worker(), worker()]);
+    if (failed === 0) {
+      ui.offlineStatus.textContent = `✓ ${bookToSave.name} (${saved} pasal) siap dibaca tanpa internet.`;
+    } else {
+      ui.offlineStatus.textContent = `${saved} pasal tersimpan, ${failed} belum berhasil. Tekan tombol lagi saat internet stabil.`;
+    }
+  } finally {
+    ui.offlineButton.disabled = false;
+    ui.offlineButton.textContent = "⬇ Simpan Kitab untuk Offline";
+  }
 }
 
 function setNavigationState() {
@@ -733,13 +824,19 @@ async function loadChapter({ scroll = true, direction = 0 } = {}) {
   const url = chapterUrl(currentBook, currentChapter);
   try {
     let data = cache.get(url);
+    let fromOffline = false;
     if (!data) {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      data = await response.json();
+      const result = await getChapterData(url);
+      data = result.data;
+      fromOffline = result.fromOffline;
       cache.set(url, data);
     }
     renderVerses(data);
+    if (ui.offlineStatus) {
+      ui.offlineStatus.textContent = fromOffline
+        ? `Mode offline: ${currentBook.name} ${currentChapter} dibuka dari penyimpanan perangkat.`
+        : `✓ ${currentBook.name} ${currentChapter} tersimpan otomatis untuk dibaca tanpa internet.`;
+    }
     renderSpiritualBlessing();
     applyChapterSearch();
     animatePageTurn(direction);
@@ -875,6 +972,14 @@ async function shareChapter() {
     if (error.name !== "AbortError") ui.share.textContent = "Gagal menyalin";
   }
 }
+
+ui.offlineButton?.addEventListener("click", saveCurrentBookOffline);
+window.addEventListener("offline", () => {
+  if (ui.offlineStatus) ui.offlineStatus.textContent = "Mode offline aktif. Pasal yang pernah disimpan tetap dapat dibaca.";
+});
+window.addEventListener("online", () => {
+  if (ui.offlineStatus) ui.offlineStatus.textContent = "Internet tersambung. Pasal yang dibuka akan disimpan otomatis.";
+});
 
 ui.testament.addEventListener("change", () => { currentChapter = 1; fillBooks(false); loadChapter(); });
 ui.book.addEventListener("change", () => { currentBook = BOOKS.find(book => book.slug === ui.book.value); currentChapter = 1; fillChapters(); loadChapter(); });
