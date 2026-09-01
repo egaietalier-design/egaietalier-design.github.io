@@ -400,3 +400,52 @@
   .book-reader.turning-next .book-page-content,
   .book-reader.turning-previous .book-page-content{animation:none}
 }
+
+
+/* Animasi buku ringan untuk perangkat sederhana */
+.page-turn-sheet{
+  contain:paint;
+  will-change:transform,opacity;
+  transform:translateZ(0);
+}
+.book-reader.turning-next:after,
+.book-reader.turning-previous:after{display:none}
+.book-reader.turning-next,
+.book-reader.turning-previous{
+  animation:smoothBookLift .74s ease-out;
+  will-change:transform;
+}
+.book-reader.turning-next .page-turn-sheet{
+  animation:smoothPaperNext .74s cubic-bezier(.4,0,.2,1);
+}
+.book-reader.turning-previous .page-turn-sheet{
+  animation:smoothPaperPrevious .74s cubic-bezier(.4,0,.2,1);
+}
+.book-reader.turning-next .book-page-content{
+  animation:smoothContentNext .7s ease-out;
+}
+.book-reader.turning-previous .book-page-content{
+  animation:smoothContentPrevious .7s ease-out;
+}
+@keyframes smoothBookLift{
+  0%,100%{transform:translate3d(0,0,0)}
+  48%{transform:translate3d(0,-4px,0)}
+}
+@keyframes smoothPaperNext{
+  0%{opacity:.96;transform:perspective(1200px) rotateY(0deg) translateZ(1px)}
+  48%{opacity:1;transform:perspective(1200px) rotateY(-88deg) translateZ(12px)}
+  100%{opacity:0;transform:perspective(1200px) rotateY(-178deg) translateZ(1px)}
+}
+@keyframes smoothPaperPrevious{
+  0%{opacity:.96;transform:perspective(1200px) rotateY(0deg) translateZ(1px)}
+  48%{opacity:1;transform:perspective(1200px) rotateY(88deg) translateZ(12px)}
+  100%{opacity:0;transform:perspective(1200px) rotateY(178deg) translateZ(1px)}
+}
+@keyframes smoothContentNext{
+  0%,45%{opacity:.62;transform:translate3d(10px,0,0)}
+  100%{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes smoothContentPrevious{
+  0%,45%{opacity:.62;transform:translate3d(-10px,0,0)}
+  100%{opacity:1;transform:translate3d(0,0,0)}
+}
