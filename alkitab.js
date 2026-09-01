@@ -722,9 +722,9 @@ async function copySermonDraft() {
 
 async function loadChapter({ scroll = true, direction = 0 } = {}) {
   stopAudio();
-  ui.status.hidden = false;
-  ui.status.classList.add("reader-loading");
-  ui.status.innerHTML = '<span class="reader-spinner" aria-hidden="true"></span><strong>Memuat Firman Tuhan…</strong>';
+  ui.status.hidden = true;
+  ui.status.classList.remove("reader-loading");
+  ui.status.replaceChildren();
   ui.verses.setAttribute("aria-busy", "true");
   ui.title.textContent = `${currentBook.name} ${currentChapter}`;
   ui.testamentLabel.textContent = currentBook.testament === "PL" ? "Perjanjian Lama" : "Perjanjian Baru";
@@ -945,6 +945,44 @@ comfortUi.continueButton.addEventListener("click", () => {
   fillBooks();
   loadChapter();
 });
+const swipePage = document.querySelector("#bookPage");
+let swipeStartX = 0;
+let swipeStartY = 0;
+let swipeStartedAt = 0;
+let swipeLocked = false;
+
+function changeChapterBySwipe(direction) {
+  if (swipeLocked) return;
+  if (direction > 0 && ui.next.disabled) return;
+  if (direction < 0 && ui.previous.disabled) return;
+  swipeLocked = true;
+  moveChapter(direction);
+  setTimeout(() => { swipeLocked = false; }, 900);
+}
+
+swipePage?.addEventListener("touchstart", event => {
+  const touch = event.changedTouches[0];
+  swipeStartX = touch.clientX;
+  swipeStartY = touch.clientY;
+  swipeStartedAt = Date.now();
+}, { passive: true });
+
+swipePage?.addEventListener("touchend", event => {
+  const touch = event.changedTouches[0];
+  const distanceX = touch.clientX - swipeStartX;
+  const distanceY = touch.clientY - swipeStartY;
+  const duration = Date.now() - swipeStartedAt;
+  if (duration < 1000 && Math.abs(distanceX) >= 55 && Math.abs(distanceX) > Math.abs(distanceY) * 1.25) {
+    changeChapterBySwipe(distanceX < 0 ? 1 : -1);
+  }
+}, { passive: true });
+
+swipePage?.addEventListener("wheel", event => {
+  if (Math.abs(event.deltaX) < 45 || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+  event.preventDefault();
+  changeChapterBySwipe(event.deltaX > 0 ? 1 : -1);
+}, { passive: false });
+
 addEventListener("beforeunload", () => window.speechSynthesis?.cancel());
 
 const initial = getInitialReading();
