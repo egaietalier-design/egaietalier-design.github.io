@@ -1,4 +1,4 @@
-const CACHE = "erikson-bible-v15";
+const CACHE = "erikson-bible-v16";
 const SHELL = [
   "./",
   "index.html",
@@ -11,9 +11,9 @@ const SHELL = [
   "komunitas.html",
   "privacy.html",
   "styles.css",
-  "alkitab.css?v=15",
+  "alkitab.css?v=16",
   "community.css",
-  "alkitab.js?v=15",
+  "alkitab.js?v=16",
   "kuis.js?v=8",
   "kuis-upgrades.js?v=8",
   "sertifikat.js",
