@@ -18,7 +18,11 @@ const BOOKS = [
   folder: `${String(index + 1).padStart(2, "0")}.${book[0]}`
 }));
 
-const SOURCE_ROOT = "https://raw.githubusercontent.com/OpenTranslationBible/open-bible/main/lang/id-ID";
+// Dua sumber dipakai agar pembacaan tetap berjalan bila salah satu layanan sedang lambat.
+const SOURCE_ROOTS = [
+  "https://raw.githubusercontent.com/OpenTranslationBible/open-bible/main/lang/id-ID",
+  "https://cdn.jsdelivr.net/gh/OpenTranslationBible/open-bible@main/lang/id-ID"
+];
 const cache = new Map();
 const OFFLINE_BIBLE_CACHE = "erikson-bible-chapters-v1";
 
@@ -191,6 +195,7 @@ let audioIndex = 0;
 let audioSession = 0;
 let isSpeaking = false;
 let selectedVerses = [];
+let chapterLoadId = 0;
 
 const READER_PREFS_KEY = "erikson-reader-preferences-v1";
 const comfortUi = {
@@ -324,11 +329,19 @@ function fillChapters() {
   ui.quickChapter.value = String(currentChapter);
 }
 
-function chapterUrl(book, chapter) {
+function chapterPath(book, chapter) {
   const folder = encodeURIComponent(book.folder).replace(/%2F/g, "/");
   const chapterDigits = book.slug === "mazmur" ? 3 : 2;
   const filename = `${book.slug}-${String(chapter).padStart(chapterDigits, "0")}.json`;
-  return `${SOURCE_ROOT}/${folder}/json/${filename}`;
+  return `${folder}/json/${filename}`;
+}
+
+function chapterUrl(book, chapter, sourceRoot = SOURCE_ROOTS[0]) {
+  return `${sourceRoot}/${chapterPath(book, chapter)}`;
+}
+
+function chapterUrls(book, chapter) {
+  return SOURCE_ROOTS.map(sourceRoot => chapterUrl(book, chapter, sourceRoot));
 }
 
 async function readOfflineChapter(url) {
@@ -353,19 +366,42 @@ async function saveOfflineResponse(url, response) {
   }
 }
 
-async function getChapterData(url) {
+function isValidChapterData(data) {
+  return Boolean(data && Array.isArray(data.verses) && data.verses.some(item =>
+    Number.isFinite(item?.verse) && Array.isArray(item.text)
+  ));
+}
+
+async function fetchChapter(url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: controller.signal, cache: "no-cache" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const copy = response.clone();
-    const data = await response.json();
-    await saveOfflineResponse(url, copy);
-    return { data, fromOffline: false };
-  } catch (networkError) {
-    const data = await readOfflineChapter(url);
-    if (!data) throw networkError;
-    return { data, fromOffline: true };
+    const data = await response.clone().json();
+    if (!isValidChapterData(data)) throw new Error("Data pasal tidak valid");
+    await saveOfflineResponse(url, response);
+    return data;
+  } finally {
+    clearTimeout(timeout);
   }
+}
+
+async function getChapterData(book, chapter) {
+  const urls = chapterUrls(book, chapter);
+  let lastError;
+  for (const url of urls) {
+    try {
+      return { data: await fetchChapter(url), fromOffline: false, url };
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  for (const url of urls) {
+    const data = await readOfflineChapter(url);
+    if (isValidChapterData(data)) return { data, fromOffline: true, url };
+  }
+  throw lastError || new Error("Data pasal belum tersedia");
 }
 
 async function saveCurrentBookOffline() {
@@ -857,6 +893,7 @@ async function copySermonDraft() {
 }
 
 async function loadChapter({ scroll = true, direction = 0, animate = true } = {}) {
+  const loadId = ++chapterLoadId;
   stopAudio();
   ui.status.hidden = true;
   ui.status.classList.remove("reader-loading");
@@ -866,16 +903,19 @@ async function loadChapter({ scroll = true, direction = 0, animate = true } = {}
   ui.testamentLabel.textContent = currentBook.testament === "PL" ? "Perjanjian Lama" : "Perjanjian Baru";
   setNavigationState();
 
-  const url = chapterUrl(currentBook, currentChapter);
+  const requestedBook = currentBook;
+  const requestedChapter = currentChapter;
+  const cacheKey = `${requestedBook.slug}:${requestedChapter}`;
   try {
-    let data = cache.get(url);
+    let data = cache.get(cacheKey);
     let fromOffline = false;
     if (!data) {
-      const result = await getChapterData(url);
+      const result = await getChapterData(requestedBook, requestedChapter);
       data = result.data;
       fromOffline = result.fromOffline;
-      cache.set(url, data);
+      cache.set(cacheKey, data);
     }
+    if (loadId !== chapterLoadId) return;
     renderVerses(data);
     if (ui.offlineStatus) {
       ui.offlineStatus.textContent = fromOffline
@@ -893,6 +933,7 @@ async function loadChapter({ scroll = true, direction = 0, animate = true } = {}
     document.title = `${currentBook.name} ${currentChapter} | Erikson Atelier`;
     if (scroll && innerWidth < 760) ui.title.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
+    if (loadId !== chapterLoadId) return;
     ui.verses.replaceChildren();
     ui.status.hidden = false;
     ui.status.classList.remove("reader-loading");
